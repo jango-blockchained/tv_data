@@ -1,0 +1,105 @@
+{
+ "actions": [],
+ "creation": "2024-07-12 00:24:12.255284",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "section_break_nhzo",
+  "field_name",
+  "field_type",
+  "column_break_moka",
+  "data",
+  "column_break_ywbe",
+  "scale"
+ ],
+ "fields": [
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_nhzo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "bold": 1,
+   "description": "<code>description</code>",
+   "fieldname": "field_name",
+   "fieldtype": "Data",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "Field Name",
+   "length": 20,
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "default": "float",
+   "fieldname": "field_type",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Field Type",
+   "options": "int\nfloat\nbool"
+  },
+  {
+   "fieldname": "column_break_moka",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "data",
+   "fieldtype": "Float",
+   "label": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ywbe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "default": "1",
+   "description": "<code>pricescale</code>",
+   "fieldname": "scale",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Scale",
+   "non_negative": 1
+  }
+ ],
+ "links": [],
+ "modified": "2024-07-12 05:11:34.419474",
+ "modified_by": "Administrator",
+ "module": "TV Data",
+ "name": "Datafield",
+ "naming_rule": "By script",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
