@@ -5,23 +5,25 @@ import json
 import csv
 import subprocess
 import requests
-
+import datetime
+from frappe.utils.password import get_decrypted_password
 
 class Datafield(Document):
 
     def autoname(self):
         if not self.field_exists():
             hash_part = frappe.generate_hash(length=16).upper()
-            field_name_part = self.field_name.replace(' ', '_').upper()
-            self.name = f"DATA_{hash_part}_{field_name_part}"
+            key_part = self.key.replace(' ', '_').upper()
+            self.name = f"DATA_{hash_part}_{key_part}"
         return
 
     def before_insert(self):
         pass
 
     def validate(self):
+        self.key = self.key.upper()
         if self.field_exists():
-            frappe.throw(f"A Datafield with description '{self.field_name}' already exists for user '{self.user}'.")
+            frappe.throw(f"A Datafield with description '{self.key}' already exists for user '{self.user}'.")
         return
 
     def on_update(self):
@@ -40,17 +42,44 @@ class Datafield(Document):
         return frappe.db.exists({
             "doctype": "Datafield",
             "user": self.user,
-            "field_name": self.field_name
+            "key": self.key
         })
 
+    def getSeriesDate(self, days: int = 0):
+        current_date = datetime.datetime.now()
+        adjusted_date = current_date + datetime.timedelta(days=days)
+        return adjusted_date.strftime('%Y%m%dT')
+
+    def start_series(self):
+        try:
+            series_entry = {
+                "doctype": "Datafield Series",
+                "symbol": self.name,
+                "date": self.getSeriesDate(),
+                "open": self.value,
+                "high": self.value,
+                "low": self.value,
+                "close": self.value,
+                "volume": 1,
+                "parent": self.name,
+                "parenttype": "Datafield",
+                "parentfield": "datafield_series"
+            }
+            self.append("datafield_series", series_entry)
+            self.save()
+            frappe.db.commit()
+            #print("Datafield Series entry created successfully.")
+        except Exception as e:
+            frappe.db.rollback()
+            print(f"An error occurred: {e}")
+        #return
 
 # STATICS
 # -------
 
 @staticmethod
 def generate_files():
-    settings = frappe.get_single("Datafield Settings")
-
+    settings = frappe.get_single("TV Data Settings")
     base_dir = 'tv_data'
     data_dir = os.path.join(base_dir, 'data')
     symbol_info_dir = os.path.join(base_dir, 'symbol_info')
@@ -62,30 +91,29 @@ def generate_files():
 
     storage_data = []
 
-    datafields = frappe.get_all('Datafield', fields=['name', 'user', 'field_name', 'data'])
+    datafields = frappe.get_all('Datafield', fields=['name', 'user', 'key', 'value'])
 
     for datafield in datafields:
-        symbol = f"{datafield['name']}_{datafield['field_name'].replace(' ', '_').upper()}"
 
-        csv_file_path = os.path.join(data_dir, f"{symbol}.csv")
+        csv_file_path = os.path.join(data_dir, f"{datafield['name']}.csv")
 
         with open(csv_file_path, mode='w', newline='') as csv_file:
             csv_writer = csv.writer(csv_file)
-            csv_writer.writerow(['timestamp', 'value'])
-            csv_writer.writerow([frappe.utils.now(), datafield['data']])
+            # csv_writer.writerow(['timestamp', 'value'])
+            csv_writer.writerow([frappe.utils.now(), datafield['value']])
 
-        json_file_path = os.path.join(symbol_info_dir, f"seed_{datafield['name']}_{datafield['field_name']}.json")
+        json_file_path = os.path.join(symbol_info_dir, f"seed_{datafield['name']}_{datafield['key']}.json")
 
         with open(json_file_path, 'w') as json_file:
             json.dump({
-                "symbol": symbol,
-                "description": datafield['field_name'],
-                "data": datafield['data']
+                "symbol": datafield['name'],
+                "description": datafield['key'],
+                "value": datafield['value']
             }, json_file, indent=4)
 
         storage_data.append({
-            "symbol": symbol,
-            "description": datafield['field_name'],
+            "symbol": datafield['name'],
+            "description": datafield['key'],
             "path": csv_file_path
         })
 
@@ -97,9 +125,9 @@ def generate_files():
 
 @staticmethod
 def update_repository():
-    settings = frappe.get_single("Datafield Settings")
+    settings = frappe.get_single("TV Data Settings")
     repo_dir = 'tv_data_repo'
-    remote_url = f'https://github.com/{settings.fork_owner}/{settings.fork_repo_name}.git'
+    remote_url = f"https://github.com/{settings.fork_owner}/{settings.fork_repo_name}.git"
 
     if not os.path.exists(repo_dir):
         subprocess.run(['git', 'clone', remote_url, repo_dir])
@@ -117,20 +145,15 @@ def update_repository():
 
 @staticmethod
 def create_pull_request():
-    settings = frappe.get_single("Datafield Settings")
-    repo_owner = settings.repo_owner
-    repo_name = settings.repo_name
-    fork_owner = settings.fork_owner
-    fork_repo_name = settings.fork_repo_name
-    branch_name = settings.branch_name
-    repo_url = settings.github_url
-    token = settings.github_token
-
-    url = f'{settings.repo_url}/{settings.repo_owner}/{settings.repo_name}/pulls'
+    settings = frappe.get_single("TV Data Settings")
+    token = get_decrypted_password( # type: ignore
+        "TV Data Settings", "TV Data Settings", "github_token", False
+    )
+    url = f"{settings.repo_url}/{settings.repo_owner}/{settings.repo_name}/pulls"
 
     data = {
         "title": settings.daily_commit_message,
-        "head": f"{fork_owner}:{branch_name}",
+        "head": f"{settings.fork_owner}:{settings.fork_branch}",
         "base": "main",
         "body": settings.pr_body
     }

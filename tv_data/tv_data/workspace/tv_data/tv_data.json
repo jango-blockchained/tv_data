@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"EFWvLMyqUI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">TV Data</span>\",\"col\":12}},{\"id\":\"Pi3pltUU3l\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Datafield\",\"col\":3}},{\"id\":\"TG-znwoW88\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"TV Data Settings\",\"col\":3}}]",
+ "content": "[{\"id\":\"EFWvLMyqUI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">TV Data</span>\",\"col\":12}},{\"id\":\"Pi3pltUU3l\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Datafield\",\"col\":3}},{\"id\":\"u0pM4Iq9QI\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Datafield Series\",\"col\":3}},{\"id\":\"TG-znwoW88\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"TV Data Settings\",\"col\":3}}]",
  "creation": "2024-07-12 00:14:58.964435",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "TV Data",
  "links": [],
- "modified": "2024-07-13 11:46:50.034669",
+ "modified": "2024-07-13 20:53:38.433206",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "TV Data",
@@ -23,13 +23,21 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 2.0,
+ "sequence_id": 3.0,
  "shortcuts": [
   {
    "color": "Grey",
    "doc_view": "List",
    "label": "TV Data Settings",
    "link_to": "TV Data Settings",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Datafield Series",
+   "link_to": "Datafield Series",
+   "stats_filter": "[]",
    "type": "DocType"
   },
   {

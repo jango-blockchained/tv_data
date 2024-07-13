@@ -6,11 +6,13 @@
  "field_order": [
   "user",
   "section_break_nhzo",
-  "field_name",
+  "key",
   "column_break_moka",
-  "data",
+  "value",
   "column_break_ywbe",
-  "scale"
+  "scale",
+  "data_series_tab",
+  "table_trss"
  ],
  "fields": [
   {
@@ -30,29 +32,8 @@
    "fieldtype": "Section Break"
   },
   {
-   "allow_in_quick_entry": 1,
-   "bold": 1,
-   "description": "<code>description</code>",
-   "fieldname": "field_name",
-   "fieldtype": "Data",
-   "in_global_search": 1,
-   "in_list_view": 1,
-   "label": "Field Name",
-   "length": 20,
-   "reqd": 1,
-   "set_only_once": 1
-  },
-  {
    "fieldname": "column_break_moka",
    "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "data",
-   "fieldtype": "Float",
-   "label": "Data",
-   "precision": "9",
-   "reqd": 1
   },
   {
    "fieldname": "column_break_ywbe",
@@ -67,10 +48,42 @@
    "in_list_view": 1,
    "label": "Scale",
    "non_negative": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "bold": 1,
+   "description": "<code>description</code>",
+   "fieldname": "key",
+   "fieldtype": "Data",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "Key",
+   "length": 20,
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "value",
+   "fieldtype": "Float",
+   "label": "Value",
+   "precision": "9",
+   "reqd": 1
+  },
+  {
+   "fieldname": "data_series_tab",
+   "fieldtype": "Tab Break",
+   "label": "Data Series"
+  },
+  {
+   "fieldname": "table_trss",
+   "fieldtype": "Table",
+   "options": "Datafield Series",
+   "read_only": 1
   }
  ],
  "links": [],
- "modified": "2024-07-12 07:11:12.814421",
+ "modified": "2024-07-13 23:14:16.475932",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",

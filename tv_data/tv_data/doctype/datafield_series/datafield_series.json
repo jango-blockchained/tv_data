@@ -1,12 +1,14 @@
 {
  "actions": [],
- "allow_import": 1,
  "autoname": "format:{symbol}-{####}",
  "creation": "2024-07-13 11:52:15.307266",
+ "default_view": "List",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "date",
+  "parent1",
+  "section_break_wlez",
+  "date_string",
   "column_break_djcq",
   "symbol",
   "dataset_section",
@@ -22,11 +24,6 @@
  ],
  "fields": [
   {
-   "fieldname": "date",
-   "fieldtype": "Date",
-   "label": "Date"
-  },
-  {
    "fieldname": "column_break_djcq",
    "fieldtype": "Column Break"
   },
@@ -34,6 +31,9 @@
    "description": "Represents the Datafield Name",
    "fieldname": "symbol",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Symbol",
    "options": "Datafield"
   },
@@ -45,6 +45,7 @@
   {
    "fieldname": "open",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Open",
    "precision": "9"
   },
@@ -55,6 +56,7 @@
   {
    "fieldname": "high",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "High",
    "precision": "9"
   },
@@ -65,6 +67,7 @@
   {
    "fieldname": "low",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Low",
    "precision": "9"
   },
@@ -75,6 +78,7 @@
   {
    "fieldname": "close",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Close",
    "precision": "9"
   },
@@ -85,33 +89,41 @@
   {
    "fieldname": "volume",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Volume",
    "precision": "9"
+  },
+  {
+   "fieldname": "date_string",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "Date String",
+   "length": 9,
+   "search_index": 1
+  },
+  {
+   "fieldname": "parent1",
+   "fieldtype": "Link",
+   "label": "Parent",
+   "options": "Datafield"
+  },
+  {
+   "fieldname": "section_break_wlez",
+   "fieldtype": "Section Break"
   }
  ],
  "in_create": 1,
+ "istable": 1,
  "links": [],
- "modified": "2024-07-13 12:10:21.111298",
+ "modified": "2024-07-13 23:11:33.450269",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield Series",
  "naming_rule": "Expression",
  "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "sort_field": "date",
+ "permissions": [],
+ "sort_field": "date_string",
  "sort_order": "DESC",
  "states": [
   {
