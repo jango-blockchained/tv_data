@@ -7,7 +7,6 @@
   "user",
   "section_break_nhzo",
   "field_name",
-  "field_type",
   "column_break_moka",
   "data",
   "column_break_ywbe",
@@ -44,14 +43,6 @@
    "set_only_once": 1
   },
   {
-   "default": "float",
-   "fieldname": "field_type",
-   "fieldtype": "Select",
-   "hidden": 1,
-   "label": "Field Type",
-   "options": "int\nfloat\nbool"
-  },
-  {
    "fieldname": "column_break_moka",
    "fieldtype": "Column Break"
   },
@@ -60,6 +51,7 @@
    "fieldname": "data",
    "fieldtype": "Float",
    "label": "Data",
+   "precision": "9",
    "reqd": 1
   },
   {
@@ -78,7 +70,7 @@
   }
  ],
  "links": [],
- "modified": "2024-07-12 05:11:34.419474",
+ "modified": "2024-07-12 07:11:12.814421",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",
@@ -101,5 +93,6 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

@@ -1,0 +1,127 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "format:{symbol}-{####}",
+ "creation": "2024-07-13 11:52:15.307266",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "date",
+  "column_break_djcq",
+  "symbol",
+  "dataset_section",
+  "open",
+  "column_break_tkgx",
+  "high",
+  "column_break_lcfn",
+  "low",
+  "column_break_twbj",
+  "close",
+  "column_break_iptm",
+  "volume"
+ ],
+ "fields": [
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "column_break_djcq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Represents the Datafield Name",
+   "fieldname": "symbol",
+   "fieldtype": "Link",
+   "label": "Symbol",
+   "options": "Datafield"
+  },
+  {
+   "fieldname": "dataset_section",
+   "fieldtype": "Section Break",
+   "label": "Dataset"
+  },
+  {
+   "fieldname": "open",
+   "fieldtype": "Float",
+   "label": "Open",
+   "precision": "9"
+  },
+  {
+   "fieldname": "column_break_tkgx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "high",
+   "fieldtype": "Float",
+   "label": "High",
+   "precision": "9"
+  },
+  {
+   "fieldname": "column_break_lcfn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "low",
+   "fieldtype": "Float",
+   "label": "Low",
+   "precision": "9"
+  },
+  {
+   "fieldname": "column_break_twbj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "close",
+   "fieldtype": "Float",
+   "label": "Close",
+   "precision": "9"
+  },
+  {
+   "fieldname": "column_break_iptm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "volume",
+   "fieldtype": "Float",
+   "label": "Volume",
+   "precision": "9"
+  }
+ ],
+ "in_create": 1,
+ "links": [],
+ "modified": "2024-07-13 12:10:21.111298",
+ "modified_by": "Administrator",
+ "module": "TV Data",
+ "name": "Datafield Series",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "date",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Orange",
+   "title": "open"
+  },
+  {
+   "color": "Blue",
+   "title": "closed"
+  }
+ ],
+ "track_changes": 1
+}

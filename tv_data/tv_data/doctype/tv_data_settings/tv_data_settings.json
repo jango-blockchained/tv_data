@@ -1,0 +1,214 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-07-12 20:29:01.772234",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_fujp",
+  "github_username",
+  "github_token",
+  "column_break_izda",
+  "github_url",
+  "github_api_url",
+  "section_break_ooba",
+  "repo_owner",
+  "repo_name",
+  "column_break_xthf",
+  "fork_owner",
+  "fork_data_type_name",
+  "fork_branch",
+  "fork_name",
+  "section_break_jyew",
+  "repo_url",
+  "column_break_kvah",
+  "fork_url",
+  "defaults_tab",
+  "defaults_section",
+  "default_user",
+  "default_field_name",
+  "default_data",
+  "data_tab",
+  "update_section",
+  "daily_commit_message",
+  "column_break_bsda",
+  "pr_body"
+ ],
+ "fields": [
+  {
+   "fieldname": "default_user",
+   "fieldtype": "Data",
+   "label": "Default User"
+  },
+  {
+   "fieldname": "default_field_name",
+   "fieldtype": "Data",
+   "label": "Default Field Name"
+  },
+  {
+   "fieldname": "default_data",
+   "fieldtype": "Float",
+   "label": "Default Data"
+  },
+  {
+   "default": "tradingview-pine-seeds",
+   "fieldname": "repo_owner",
+   "fieldtype": "Data",
+   "label": "Repository Owner"
+  },
+  {
+   "default": "seed_crypto_santiment",
+   "fieldname": "repo_name",
+   "fieldtype": "Data",
+   "label": "Repository Name"
+  },
+  {
+   "fieldname": "fork_owner",
+   "fieldtype": "Data",
+   "label": "Fork Owner"
+  },
+  {
+   "fieldname": "github_token",
+   "fieldtype": "Password",
+   "label": "GitHub Token"
+  },
+  {
+   "fieldname": "defaults_section",
+   "fieldtype": "Section Break",
+   "label": "Defaults"
+  },
+  {
+   "fieldname": "section_break_ooba",
+   "fieldtype": "Section Break",
+   "label": "Repository"
+  },
+  {
+   "fieldname": "column_break_xthf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_fujp",
+   "fieldtype": "Section Break",
+   "label": "Github"
+  },
+  {
+   "fieldname": "defaults_tab",
+   "fieldtype": "Tab Break",
+   "label": "Defaults"
+  },
+  {
+   "default": "https://github.com",
+   "fieldname": "github_url",
+   "fieldtype": "Data",
+   "label": "Github URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "column_break_izda",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_jyew",
+   "fieldtype": "Section Break",
+   "label": "URL"
+  },
+  {
+   "fieldname": "column_break_kvah",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "github_username",
+   "fieldtype": "Data",
+   "label": "Github Username"
+  },
+  {
+   "fieldname": "fork_name",
+   "fieldtype": "Data",
+   "is_virtual": 1,
+   "label": "Fork Name",
+   "read_only": 1
+  },
+  {
+   "default": "develop",
+   "fieldname": "fork_branch",
+   "fieldtype": "Data",
+   "label": "Fork Branch"
+  },
+  {
+   "description": "<code>seed_username_[data_type_name]001</code>",
+   "fieldname": "fork_data_type_name",
+   "fieldtype": "Data",
+   "label": "Fork Data Type Name"
+  },
+  {
+   "fieldname": "data_tab",
+   "fieldtype": "Tab Break",
+   "label": "Data"
+  },
+  {
+   "fieldname": "update_section",
+   "fieldtype": "Section Break",
+   "label": "On Update / Pull Request"
+  },
+  {
+   "default": "Daily update of data and symbol info files",
+   "fieldname": "daily_commit_message",
+   "fieldtype": "Data",
+   "label": "Update Commit Message"
+  },
+  {
+   "default": "This is an automated pull request for the daily update of data and symbol info files.",
+   "fieldname": "pr_body",
+   "fieldtype": "Data",
+   "label": "Pull Request Body Message"
+  },
+  {
+   "fieldname": "column_break_bsda",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "https://api.github.com/repos",
+   "fieldname": "github_api_url",
+   "fieldtype": "Data",
+   "label": "Github API URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "repo_url",
+   "fieldtype": "Data",
+   "label": "Repository URL",
+   "options": "URL",
+   "read_only": 1
+  },
+  {
+   "fieldname": "fork_url",
+   "fieldtype": "Data",
+   "label": "Fork URL",
+   "options": "URL",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-07-13 13:17:38.024615",
+ "modified_by": "Administrator",
+ "module": "TV Data",
+ "name": "TV Data Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
