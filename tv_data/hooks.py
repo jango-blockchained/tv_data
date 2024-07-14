@@ -134,9 +134,8 @@ app_license = "mit"
 # ---------------
 
 scheduler_events = {
-
     "cron": {
-        "daily": [
+        "17 * * * *": [
             "tv_data.tv_data.doctype.datafield.datafield.extend_all_series"
         ]
     }
