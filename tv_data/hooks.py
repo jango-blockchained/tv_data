@@ -133,8 +133,14 @@ app_license = "mit"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
+scheduler_events = {
+
+    "cron": {
+        "daily": [
+            "tv_data.tv_data.doctype.datafield.datafield.extend_all_series"
+        ]
+    }
+}
 # 		"tv_data.tasks.all"
 # 	],
 # 	"daily": [

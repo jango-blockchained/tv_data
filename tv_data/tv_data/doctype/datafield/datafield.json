@@ -12,7 +12,7 @@
   "column_break_ywbe",
   "scale",
   "data_series_tab",
-  "table_trss"
+  "datafield_series_table"
  ],
  "fields": [
   {
@@ -66,6 +66,7 @@
    "default": "0",
    "fieldname": "value",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Value",
    "precision": "9",
    "reqd": 1
@@ -76,14 +77,14 @@
    "label": "Data Series"
   },
   {
-   "fieldname": "table_trss",
+   "fieldname": "datafield_series_table",
    "fieldtype": "Table",
-   "options": "Datafield Series",
-   "read_only": 1
+   "label": "Datafield Series Table",
+   "options": "Datafield Series"
   }
  ],
  "links": [],
- "modified": "2024-07-13 23:14:16.475932",
+ "modified": "2024-07-13 23:44:43.010202",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",
