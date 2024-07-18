@@ -4,6 +4,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "owner_section",
   "user",
   "section_break_nhzo",
   "key",
@@ -11,6 +12,10 @@
   "value",
   "column_break_ywbe",
   "scale",
+  "section_break_tpji",
+  "created",
+  "column_break_nosw",
+  "last_modified",
   "data_series_tab",
   "datafield_series_table"
  ],
@@ -81,11 +86,36 @@
    "fieldtype": "Table",
    "label": "Datafield Series Table",
    "options": "Datafield Series"
+  },
+  {
+   "fieldname": "owner_section",
+   "fieldtype": "Section Break",
+   "label": "Owner"
+  },
+  {
+   "fieldname": "section_break_tpji",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "created",
+   "fieldtype": "Datetime",
+   "is_virtual": 1,
+   "label": "Created"
+  },
+  {
+   "fieldname": "column_break_nosw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_modified",
+   "fieldtype": "Datetime",
+   "is_virtual": 1,
+   "label": "Last Modified"
   }
  ],
  "hide_toolbar": 1,
  "links": [],
- "modified": "2024-07-17 04:47:59.829959",
+ "modified": "2024-07-18 06:11:16.158242",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",
