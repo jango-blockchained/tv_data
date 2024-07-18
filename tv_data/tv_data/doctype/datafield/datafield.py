@@ -10,7 +10,11 @@ from frappe.utils.password import get_decrypted_password
 
 class Datafield(Document):
 
+    useID = False
+
+
     def autoname(self):
+        """Generates a unique name for the Datafield document."""
         if not self.field_exists():
             hash_part = frappe.generate_hash(length=16).upper()
             key_part = self.key.replace(' ', '_').upper()
@@ -18,14 +22,15 @@ class Datafield(Document):
         return
 
     def before_insert(self):
+        """Check if a Datafield with the same key and user already exists before inserting."""
         if self.field_exists():
             frappe.throw(f"A Datafield with description '{self.key}' already exists for user '{self.user}'.")
         self.start_doc_series()
         return
 
     def validate(self):
+        """Sanitize and validate the key."""
         self.key = self.key.replace(' ', '_').upper()
-
         return
 
     def on_update(self):
@@ -40,20 +45,29 @@ class Datafield(Document):
     def on_submit(self):
         pass
 
-    def field_exists(self):
-        return frappe.db.exists({
+    def field_exists(self, key=None):
+        """Check if a Datafield with the specified key or name and user already exists."""
+        key_to_check = self.key.replace(' ', '_').upper() if key is None else key.replace(' ', '_').upper()
+        exists = frappe.db.exists({
             "doctype": "Datafield",
             "user": self.user,
-            "key": self.key.replace(' ', '_').upper()
+            "key": key_to_check
         })
+        if not exists:
+            exists = frappe.db.exists({
+                "doctype": "Datafield",
+                "user": self.user,
+                "name": key_to_check
+            })
+            if exists:
+                self.useID = True
+        return exists
+            
 
-
-
-    def start_doc_series(self):
+    def start_doc_series(self):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+        """Initialize the document series."""
         try:
             series_entry = {
-                "doctype": "Datafield Series",
-                "symbol": self.name,
                 "date_string": getSeriesDate(),
                 "open": self.value,
                 "high": self.value,
@@ -67,8 +81,99 @@ class Datafield(Document):
             self.append("datafield_series_table", series_entry)
             print("Datafield Series entry created successfully.")
         except Exception as e:
+            frappe.log_error(f"An error occurred: {e}", "DataField Series Initialization Error")
             print(f"An error occurred: {e}")
 
+
+    @frappe.whitelist()
+    def extend_doc_series(self, day: int = 0):
+        """
+        This method extends the doc series for all Datafield documents.
+        """
+        try:
+            new_entry = {
+                "date_string": getSeriesDate(day),
+                "open": self.value,
+                "high": self.value,
+                "low": self.value,
+                "close": self.value,
+                "volume": 1,
+                "parent": self.name,
+                "parenttype": "Datafield",
+                "parentfield": "datafield_series_table"
+            }
+            self.append("datafield_series_table", new_entry)
+            self.save()
+            frappe.db.commit()
+            pass
+        except Exception as e:
+            frappe.log_error(f"An error occurred: {e}", "Extend Doc Series Error")
+
+
+    @frappe.whitelist()
+    def update_doc(user, key, value, n=None, insert=False):
+        """Update or insert a Datafield document and its series table."""
+        try:
+            normalized_key = key.replace(' ', '_').upper()
+            existing_doc = frappe.get_all('Datafield', filters={'user': user, 'key': normalized_key}, limit=1)
+
+            if not existing_doc:
+                existing_doc = frappe.get_all('Datafield', filters={'user': user, 'name': normalized_key}, limit=1)
+
+            if existing_doc:
+                doc = frappe.get_doc('Datafield', existing_doc[0].name)
+            else:
+                if insert:
+                    doc = frappe.new_doc('Datafield')
+                    doc.update({
+                        'doctype': 'Datafield',
+                        'key': normalized_key,
+                        'user': user,
+                        'value': value
+                    })
+                else:
+                    frappe.log_error(f"No Datafield found for user '{user}' with key or name '{key}'")
+
+            # Update the value of the parent document
+            doc.value = value
+
+            # Check and update the last series in the child table if it exists
+            if doc.datafield_series_table:
+                last_series = doc.datafield_series_table[-1]
+                if not n:
+                    last_series.close = value
+                    if last_series.high < value:
+                        last_series.high = value
+                    if last_series.low > value:
+                        last_series.low = value
+                    last_series.volume += 1
+                else:
+                    if n == 1:
+                        last_series.open = value
+                    elif n == 2:
+                        last_series.high = value
+                    elif n == 3:
+                        last_series.low = value
+                    elif n == 4:
+                        last_series.close = value
+                    elif n == 5:
+                        last_series.volume = value
+
+            # Save changes to the parent document (including its child table)
+            doc.save()
+            frappe.db.commit()
+
+            # Notify the user of success
+            frappe.msgprint(f"Updated datafield '{key}'")
+
+        except Exception as e:
+            # Log and raise error messages
+            frappe.log_error(f"An error occurred: {e}", "DataField Update Error")
+            frappe.throw(f"An error occurred: {e}")
+
+
+# STATICS
+# -------
 
 @staticmethod
 def getSeriesDate(days: int = 0):
@@ -76,32 +181,6 @@ def getSeriesDate(days: int = 0):
     adjusted_date = current_date + datetime.timedelta(days=days)
     return adjusted_date.strftime('%Y%m%dT')
 
-@staticmethod
-def extend_doc_series(doc):
-    try:
-        # last_series_entry = Datafield.get_last_child(doc, "datafield_series_table")
-        new_series_entry = {
-            "doctype": "Datafield Series",
-            "date_string": getSeriesDate(),
-            "open": doc.value,
-            "high": doc.value,
-            "low": doc.value,
-            "close": doc.value,
-            "volume": 0,
-            "parent": doc.name,
-            "parenttype": "Datafield",
-            "parentfield": "datafield_series_table"
-        }
-        doc.append("datafield_series_table", new_series_entry)
-        doc.insert()
-        print("Datafield Series entry created successfully.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-
-
-# STATICS
-# -------
 
 @staticmethod
 def generate_files():
@@ -149,6 +228,7 @@ def generate_files():
 
     return f"Files generated successfully in {base_dir}"
 
+
 @staticmethod
 def update_repository():
     settings = frappe.get_single("TV Data Settings")
@@ -168,6 +248,7 @@ def update_repository():
     os.chdir('..')
 
     return "Repository updated successfully"
+
 
 @staticmethod
 def create_pull_request():
@@ -196,13 +277,13 @@ def create_pull_request():
     else:
         return f"Failed to create pull request: {response.json()}"
 
-
+@frappe.whitelist
 @staticmethod
 def extend_all_series():
     try:
         all = frappe.get_all("Datafield", fields={["name","key","value","datafield_series_table"]})
         for doc in all:
-            Datafield.extend_doc_series(doc)
+            doc.extend_doc_series()
 
         frappe.db.commit()
         print(f"Successfull Extended Datafield Series: {len(all)}")

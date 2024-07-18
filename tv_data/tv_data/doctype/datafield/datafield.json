@@ -83,8 +83,9 @@
    "options": "Datafield Series"
   }
  ],
+ "hide_toolbar": 1,
  "links": [],
- "modified": "2024-07-13 23:44:43.010202",
+ "modified": "2024-07-17 04:47:59.829959",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",
@@ -105,6 +106,7 @@
   }
  ],
  "quick_entry": 1,
+ "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

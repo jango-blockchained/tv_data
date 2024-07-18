@@ -8,19 +8,18 @@ frappe.ui.form.on("TV Data Settings", {
         frm.trigger('fork_url');
 	},
     repo_url(frm) {
-        frm.doc.repo_url = frm.doc.github_url;
+        return frm.doc.github_url;
     },
     fork_url(frm) {
         if (frm.doc.fork_name) {
-            frm.doc.repo_url = frm.doc.github_url;
+            return frm.doc.github_url;
         }
     },
     fork_name(frm) {
         if (frm.doc.fork_data_type_name != "" && frm.doc.fork_owner != "") {
             let prefix = 'seed';
             let us     = '_';
-            frm.doc.fork_name = prefix + us + frm.doc.fork_owner + us + frm.doc.fork_data_type_name;
+            return prefix + us + frm.doc.fork_owner + us + frm.doc.fork_data_type_name;
         }
     }
-
 });
