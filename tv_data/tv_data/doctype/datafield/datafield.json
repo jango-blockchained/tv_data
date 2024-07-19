@@ -1,17 +1,28 @@
 {
- "actions": [],
+ "actions": [
+  {
+   "action": "extend_doc_series",
+   "action_type": "Server Action",
+   "group": "Series",
+   "label": "Extend"
+  }
+ ],
+ "allow_copy": 1,
+ "allow_events_in_timeline": 1,
  "creation": "2024-07-12 00:24:12.255284",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "owner_section",
   "user",
+  "column_break_osup",
+  "type",
   "section_break_nhzo",
   "key",
+  "scale",
   "column_break_moka",
   "value",
-  "column_break_ywbe",
-  "scale",
+  "n",
   "section_break_tpji",
   "created",
   "column_break_nosw",
@@ -38,10 +49,6 @@
   },
   {
    "fieldname": "column_break_moka",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_ywbe",
    "fieldtype": "Column Break"
   },
   {
@@ -82,6 +89,7 @@
    "label": "Data Series"
   },
   {
+   "columns": 1,
    "fieldname": "datafield_series_table",
    "fieldtype": "Table",
    "label": "Datafield Series Table",
@@ -111,11 +119,25 @@
    "fieldtype": "Datetime",
    "is_virtual": 1,
    "label": "Last Modified"
+  },
+  {
+   "fieldname": "n",
+   "fieldtype": "Int",
+   "label": "N"
+  },
+  {
+   "fieldname": "column_break_osup",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type"
   }
  ],
  "hide_toolbar": 1,
  "links": [],
- "modified": "2024-07-18 06:11:16.158242",
+ "modified": "2024-07-19 00:57:06.400323",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",

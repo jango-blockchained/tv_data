@@ -4,7 +4,6 @@
  "creation": "2024-07-13 11:52:15.307266",
  "default_view": "List",
  "doctype": "DocType",
- "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "section_break_wlez",
@@ -92,7 +91,7 @@
  "in_create": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-07-14 10:55:34.307880",
+ "modified": "2024-07-18 23:03:58.063680",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield Series",

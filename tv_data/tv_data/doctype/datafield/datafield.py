@@ -6,9 +6,42 @@ import csv
 import datetime
 
 
+@staticmethod
+def convert_to_pricescale(value):
+    int_part, frac_part = str(value).split('.')
+    base_multiplier = 10 ** len(int_part)
+    if len(int_part) > 1:
+        adjustment_factor = 10 ** ((len(int_part) - 1) * 2)
+        base_multiplier *= adjustment_factor
+    frac_multiplier = 10 ** len(frac_part)
+    total_multiplier = base_multiplier * frac_multiplier
+    return round(total_multiplier)
+
+@staticmethod
+def exists(user, key):
+    """Check if a Datafield with the specified key or name and user already exists."""
+    return frappe.db.exists({
+            "doctype": "Datafield",
+            "key": key,
+            "user": user
+        })
+
+
+def get_series_date(days: int = 0):
+    current_date = datetime.datetime.now()
+    adjusted_date = current_date + datetime.timedelta(days=days)
+    return adjusted_date.strftime('%Y%m%dT')
+
+
 class Datafield(Document):
 
-    useID = False
+
+    def exists(self):
+        """Check if a Datafield with the specified key or name and user already exists."""
+        return frappe.db.exists({
+                "doctype": "Datafield",
+                "name": self.name
+            })
 
     @property
     def created(self):
@@ -22,26 +55,26 @@ class Datafield(Document):
     def dynamic(self):
         return 1 if self.n >= 1 else 0
 
+    
     def autoname(self):
         """Generates a unique name for the Datafield document."""
-        self.key = self.key.replace(' ', '_').upper()
-        if not self.field_exists():
+        if self.exists:
+            frappe.throw(f"A Datafield with description '{self.name}' already exists for user '{self.user}'.")
+        else:
             hash_part = frappe.generate_hash(length=16).upper()
             self.name = f"DATA_{hash_part}_{self.key}"
-        return
+            return self.name
 
     def before_insert(self):
         """Check if a Datafield with the same key and user already exists before inserting."""
-        if self.field_exists():
-            frappe.throw(f"A Datafield with description '{self.key}' already exists for user '{self.user}'.")
+        if self.exists:
+            frappe.throw(f"A Datafield with description '{self.doc_key}' already exists for user '{self.user}'.")
         self.scale = self.convert_to_pricescale()
         self.start_doc_series()
         return
 
     def validate(self):
-        """Sanitize and validate the key."""
-        self.key = self.key.replace(' ', '_').upper()
-        return
+        pass
 
     def on_update(self):
         pass
@@ -55,39 +88,11 @@ class Datafield(Document):
     def on_submit(self):
         pass
 
-    def field_exists(self, key=None):
-        """Check if a Datafield with the specified key or name and user already exists."""
-        key_to_check = self.key.replace(' ', '_').upper() if key is None else key.replace(' ', '_').upper()
-        exists = frappe.db.exists({
-            "doctype": "Datafield",
-            "user": self.user,
-            "key": key_to_check
-        })
-        if not exists:
-            exists = frappe.db.exists({
-                "doctype": "Datafield",
-                "user": self.user,
-                "name": key_to_check
-            })
-            if exists:
-                self.useID = True
-        return exists
-
-    def convert_to_pricescale(self):
-        int_part, frac_part = str(self.value).split('.')
-        base_multiplier = 10 ** len(int_part)
-        if len(int_part) > 1:
-            adjustment_factor = 10 ** ((len(int_part) - 1) * 2)
-            base_multiplier *= adjustment_factor
-        frac_multiplier = 10 ** len(frac_part)
-        total_multiplier = base_multiplier * frac_multiplier
-        return round(total_multiplier)
-
-    def start_doc_series(self):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+    def start_doc_series(self):
         """Initialize the document series."""
         try:
             series_entry = {
-                "date_string": getSeriesDate(),
+                "date_string": get_series_date(),
                 "open": self.value,
                 "high": self.value,
                 "low": self.value,
@@ -111,7 +116,7 @@ class Datafield(Document):
         """
         try:
             new_entry = {
-                "date_string": getSeriesDate(day),
+                "date_string": get_series_date(day),
                 "open": self.value,
                 "high": self.value,
                 "low": self.value,
@@ -130,7 +135,7 @@ class Datafield(Document):
 
 
     @frappe.whitelist()
-    def update_doc(self, user, key, value, n=None):
+    def update_doc_series(self, value, n=None):
         """Update or insert a Datafield document and its series table."""
         try:
             # Update the value of the parent document
@@ -161,23 +166,12 @@ class Datafield(Document):
             frappe.db.commit()
 
             # Notify the user of success
-            frappe.msgprint(f"Updated datafield '{key}'")
+            frappe.msgprint(f"Updated datafield '{self.name}'")
 
         except Exception as e:
             # Log and raise error messages
             frappe.log_error(f"An error occurred: {e}", "DataField Update Error")
             frappe.throw(f"An error occurred: {e}")
-
-
-# STATICS
-# -------
-
-@staticmethod
-def getSeriesDate(days: int = 0):
-    current_date = datetime.datetime.now()
-    adjusted_date = current_date + datetime.timedelta(days=days)
-    return adjusted_date.strftime('%Y%m%dT')
-
 
 @staticmethod
 def generate_files():
@@ -242,5 +236,20 @@ def extend_all_series():
         frappe.db.rollback()
         print(f"An error occurred: {e}")
 
+def update_all_series():
+    try:
+        all_docs = frappe.get_all("Datafield")
+
+        for doc_name in all_docs:
+            doc = frappe.get_doc("Datafield", doc_name.name)
+            doc.update_doc_series()
+
+        frappe.db.commit()
+        print("Successfull Extended Datafield Series")
+
+    except Exception as e:
+        frappe.db.rollback()
+        print(f"An error occurred: {e}")
+
 def update_doc(doc, user, key, value, n):
-    return Datafield.update_doc(doc, user, key, value, n)
+    return Datafield.update_doc_series(doc, user, key, value, n)
