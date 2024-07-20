@@ -17,15 +17,23 @@ def convert_to_pricescale(value):
     total_multiplier = base_multiplier * frac_multiplier
     return round(total_multiplier)
 
-@staticmethod
-def exists(user, key):
-    """Check if a Datafield with the specified key or name and user already exists."""
-    return frappe.db.exists({
-            "doctype": "Datafield",
-            "key": key,
-            "user": user
-        })
+def get_doc_from_user_key(user, key, insert=False):
+    query = {
+        "doctype": "Datafield",
+        "key": key,
+        "user": user
+    }
 
+    exists = frappe.db.exists(query) 
+    if exists:
+        return frappe.get_doc(query)
+    else:
+        if insert:
+            doc = frappe.new_doc(query)
+            doc.insert(ignore_permissions=True)
+            return doc
+        else:
+            return None
 
 def get_series_date(days: int = 0):
     current_date = datetime.datetime.now()
@@ -40,7 +48,8 @@ class Datafield(Document):
         """Check if a Datafield with the specified key or name and user already exists."""
         return frappe.db.exists({
                 "doctype": "Datafield",
-                "name": self.name
+                "key": self.key,
+                "user": self.user
             })
 
     @property
@@ -54,22 +63,29 @@ class Datafield(Document):
     @property
     def dynamic(self):
         return 1 if self.n >= 1 else 0
-
     
+    @property
+    def incoming_alert_count(self):
+        return len(self.incoming_alert_table)
+
+    @property
+    def series_count(self):
+        return len(self.datafield_series_table)
+
     def autoname(self):
         """Generates a unique name for the Datafield document."""
         if self.exists:
             frappe.throw(f"A Datafield with description '{self.name}' already exists for user '{self.user}'.")
-        else:
+        if self.name is None or self.name.startswith("new"):
             hash_part = frappe.generate_hash(length=16).upper()
             self.name = f"DATA_{hash_part}_{self.key}"
-            return self.name
+        return
 
     def before_insert(self):
         """Check if a Datafield with the same key and user already exists before inserting."""
         if self.exists:
-            frappe.throw(f"A Datafield with description '{self.doc_key}' already exists for user '{self.user}'.")
-        self.scale = self.convert_to_pricescale()
+            frappe.throw(f"A Datafield with description '{self.key}' already exists for user '{self.user}'.")
+        self.scale = self.value.convert_to_pricescale()
         self.start_doc_series()
         return
 
@@ -132,19 +148,30 @@ class Datafield(Document):
             pass
         except Exception as e:
             frappe.log_error(f"An error occurred: {e}", "Extend Doc Series Error")
+    
 
+
+    @frappe.whitelist()
+    def save_incoming_alert(self, full_json):
+        self.append("Datafield Incoming Alert Table", {
+            "json": json.dump(full_json.get("datafield"), ident=4)
+        })
+        self.save()
+
+        return
+    
+    @frappe.whitelist()
+    def get_last_series(self):
+        return self.datafield_series_table[-1]
 
     @frappe.whitelist()
     def update_doc_series(self, value, n=None):
         """Update or insert a Datafield document and its series table."""
         try:
-            # Update the value of the parent document
-            self.value = value
-
             # Check and update the last series in the child table if it exists
             if self.datafield_series_table:
-                last_series = self.datafield_series_table[-1]
-                if not n:
+                last_series = self.get_last_series()
+                if not n and last_series:
                     last_series.close = value
                     if last_series.high < value:
                         last_series.high = value
@@ -163,15 +190,33 @@ class Datafield(Document):
 
             # Save changes to the parent document (including its child table)
             self.save()
-            frappe.db.commit()
+            return
 
             # Notify the user of success
-            frappe.msgprint(f"Updated datafield '{self.name}'")
+            # frappe.msgprint(f"Updated datafield '{self.name}'")
 
         except Exception as e:
             # Log and raise error messages
             frappe.log_error(f"An error occurred: {e}", "DataField Update Error")
             frappe.throw(f"An error occurred: {e}")
+
+    @frappe.whitelist()
+    def handle_new_data(self, value, n, full_json):
+        try:
+            # Update the value of the parent document
+            self.value = value
+            self.n = n
+            
+            self.update_doc_series(value, n)
+            self.save_incoming_alert(full_json)
+            self.save()
+
+            #frappe.db.commit()
+            return
+        
+        except Exception as e:
+            frappe.db.rollback()
+            print(f"An error occurred: {e}")
 
 @staticmethod
 def generate_files():
@@ -235,21 +280,3 @@ def extend_all_series():
     except Exception as e:
         frappe.db.rollback()
         print(f"An error occurred: {e}")
-
-def update_all_series():
-    try:
-        all_docs = frappe.get_all("Datafield")
-
-        for doc_name in all_docs:
-            doc = frappe.get_doc("Datafield", doc_name.name)
-            doc.update_doc_series()
-
-        frappe.db.commit()
-        print("Successfull Extended Datafield Series")
-
-    except Exception as e:
-        frappe.db.rollback()
-        print(f"An error occurred: {e}")
-
-def update_doc(doc, user, key, value, n):
-    return Datafield.update_doc_series(doc, user, key, value, n)

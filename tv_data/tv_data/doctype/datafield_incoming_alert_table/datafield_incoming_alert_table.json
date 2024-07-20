@@ -1,0 +1,36 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-07-19 21:29:42.112127",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "raw_section",
+  "json"
+ ],
+ "fields": [
+  {
+   "fieldname": "raw_section",
+   "fieldtype": "Section Break",
+   "label": "RAW"
+  },
+  {
+   "fieldname": "json",
+   "fieldtype": "JSON",
+   "label": "JSON"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-07-19 21:30:57.149303",
+ "modified_by": "Administrator",
+ "module": "TV Data",
+ "name": "Datafield Incoming Alert Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

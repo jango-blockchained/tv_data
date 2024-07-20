@@ -1,7 +1,7 @@
 {
  "actions": [
   {
-   "action": "extend_doc_series",
+   "action": "tv_data.tv_data.doctype.datafield.datafield.extend_doc_series",
    "action_type": "Server Action",
    "group": "Series",
    "label": "Extend"
@@ -28,7 +28,9 @@
   "column_break_nosw",
   "last_modified",
   "data_series_tab",
-  "datafield_series_table"
+  "datafield_series_table",
+  "icoming_alerts_tab",
+  "datafield_incoming_alert_table"
  ],
  "fields": [
   {
@@ -41,11 +43,13 @@
    "label": "User",
    "options": "User",
    "reqd": 1,
-   "search_index": 1
+   "search_index": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "section_break_nhzo",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Data"
   },
   {
    "fieldname": "column_break_moka",
@@ -54,17 +58,19 @@
   {
    "allow_in_quick_entry": 1,
    "default": "1",
-   "description": "<code>pricescale</code>",
+   "description": "Set only once.",
    "fieldname": "scale",
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "Scale",
-   "non_negative": 1
+   "non_negative": 1,
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
    "allow_in_quick_entry": 1,
    "bold": 1,
-   "description": "<code>description</code>",
+   "description": "Set only once.",
    "fieldname": "key",
    "fieldtype": "Data",
    "in_global_search": 1,
@@ -76,9 +82,9 @@
   },
   {
    "default": "0",
+   "description": "Latest Value",
    "fieldname": "value",
    "fieldtype": "Float",
-   "in_list_view": 1,
    "label": "Value",
    "precision": "9",
    "reqd": 1
@@ -102,7 +108,8 @@
   },
   {
    "fieldname": "section_break_tpji",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Timeline"
   },
   {
    "fieldname": "created",
@@ -121,6 +128,7 @@
    "label": "Last Modified"
   },
   {
+   "description": "Latest Value",
    "fieldname": "n",
    "fieldtype": "Int",
    "label": "N"
@@ -130,14 +138,30 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "Series",
    "fieldname": "type",
    "fieldtype": "Select",
-   "label": "Type"
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Type",
+   "options": "Series\nDataset",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "icoming_alerts_tab",
+   "fieldtype": "Tab Break",
+   "label": "Incoming Alerts"
+  },
+  {
+   "fieldname": "datafield_incoming_alert_table",
+   "fieldtype": "Table",
+   "label": "Incoming Alert Table",
+   "options": "Datafield Incoming Alert Table"
   }
  ],
- "hide_toolbar": 1,
  "links": [],
- "modified": "2024-07-19 00:57:06.400323",
+ "modified": "2024-07-20 22:08:28.219245",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",
@@ -162,5 +186,6 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
+ "timeline_field": "user",
  "track_changes": 1
 }
