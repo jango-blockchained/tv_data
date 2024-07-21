@@ -1,9 +1,9 @@
 {
  "actions": [
   {
-   "action": "tv_data.tv_data.doctype.datafield.datafield.extend_doc_series",
+   "action": "tv_data.tv_data.doctype.datafield.datafield.Datafield.extend_doc_series",
    "action_type": "Server Action",
-   "group": "Series",
+   "group": "Data Series",
    "label": "Extend"
   }
  ],
@@ -23,14 +23,14 @@
   "column_break_moka",
   "value",
   "n",
+  "data_series_section",
+  "daily_chart",
   "section_break_tpji",
   "created",
   "column_break_nosw",
   "last_modified",
   "data_series_tab",
-  "datafield_series_table",
-  "icoming_alerts_tab",
-  "datafield_incoming_alert_table"
+  "datafield_series_table"
  ],
  "fields": [
   {
@@ -149,19 +149,29 @@
    "set_only_once": 1
   },
   {
-   "fieldname": "icoming_alerts_tab",
-   "fieldtype": "Tab Break",
-   "label": "Incoming Alerts"
+   "fieldname": "data_series_section",
+   "fieldtype": "Section Break",
+   "label": "Data Series"
   },
   {
-   "fieldname": "datafield_incoming_alert_table",
-   "fieldtype": "Table",
-   "label": "Incoming Alert Table",
-   "options": "Datafield Incoming Alert Table"
+   "fieldname": "daily_chart",
+   "fieldtype": "HTML",
+   "label": "Daily Chart"
   }
  ],
- "links": [],
- "modified": "2024-07-20 22:08:28.219245",
+ "links": [
+  {
+   "group": "Child",
+   "link_doctype": "Datafield Incoming Alert Table",
+   "link_fieldname": "name"
+  },
+  {
+   "group": "Child",
+   "link_doctype": "Datafield Series",
+   "link_fieldname": "name"
+  }
+ ],
+ "modified": "2024-07-21 09:17:43.536987",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",

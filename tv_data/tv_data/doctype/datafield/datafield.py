@@ -5,18 +5,6 @@ import json
 import csv
 import datetime
 
-
-@staticmethod
-def convert_to_pricescale(value):
-    int_part, frac_part = str(value).split('.')
-    base_multiplier = 10 ** len(int_part)
-    if len(int_part) > 1:
-        adjustment_factor = 10 ** ((len(int_part) - 1) * 2)
-        base_multiplier *= adjustment_factor
-    frac_multiplier = 10 ** len(frac_part)
-    total_multiplier = base_multiplier * frac_multiplier
-    return round(total_multiplier)
-
 def get_doc_from_user_key(user, key, insert=False):
     query = {
         "doctype": "Datafield",
@@ -24,12 +12,13 @@ def get_doc_from_user_key(user, key, insert=False):
         "user": user
     }
 
-    exists = frappe.db.exists(query) 
-    if exists:
+    if frappe.db.exists(query):
         return frappe.get_doc(query)
     else:
         if insert:
-            doc = frappe.new_doc(query)
+            doc = frappe.new_doc("Datafield")
+            doc.key = key
+            doc.user = user
             doc.insert(ignore_permissions=True)
             return doc
         else:
@@ -43,15 +32,6 @@ def get_series_date(days: int = 0):
 
 class Datafield(Document):
 
-
-    def exists(self):
-        """Check if a Datafield with the specified key or name and user already exists."""
-        return frappe.db.exists({
-                "doctype": "Datafield",
-                "key": self.key,
-                "user": self.user
-            })
-
     @property
     def created(self):
         return self.creation
@@ -59,40 +39,53 @@ class Datafield(Document):
     @property
     def last_modified(self):
         return self.modified
-
-    @property
-    def dynamic(self):
-        return 1 if self.n >= 1 else 0
     
     @property
     def incoming_alert_count(self):
-        return len(self.incoming_alert_table)
+        return len(self.datafield_incoming_alert_table)
 
     @property
     def series_count(self):
         return len(self.datafield_series_table)
 
+    # --------------------------------------------------------------------------------------------------------
+
     def autoname(self):
         """Generates a unique name for the Datafield document."""
-        if self.exists:
-            frappe.throw(f"A Datafield with description '{self.name}' already exists for user '{self.user}'.")
-        if self.name is None or self.name.startswith("new"):
+        if self.is_new():
+        #     if self.exists():
+        #         frappe.throw(f"A Datafield with description '{self.name}' already exists for user '{self.user}'.")
             hash_part = frappe.generate_hash(length=16).upper()
             self.name = f"DATA_{hash_part}_{self.key}"
         return
 
     def before_insert(self):
         """Check if a Datafield with the same key and user already exists before inserting."""
-        if self.exists:
+        if self.key_exists():
             frappe.throw(f"A Datafield with description '{self.key}' already exists for user '{self.user}'.")
-        self.scale = self.value.convert_to_pricescale()
+        self.set_scale()
         self.start_doc_series()
         return
 
-    def validate(self):
-        pass
+    def before_save(self):
+        """Store the original value of the field before it is updated."""
+        if not self.is_new():
+            self._original_value = frappe.db.get_value("Datafield", self.name, "value")
 
     def on_update(self):
+        """Check if the value has changed and updates the series."""
+        if hasattr(self, '_original_value') and self.value != self._original_value:
+            self.handle_new_data(self.value, self.n, self.json)
+
+    def key_exists(self):
+        """Check if a Datafield with the specified key or name and user already exists."""
+        return frappe.db.exists({
+                "doctype": "Datafield",
+                "key": self.key,
+                "user": self.user
+            })
+
+    def validate(self):
         pass
 
     def on_cancel(self):
@@ -103,6 +96,20 @@ class Datafield(Document):
 
     def on_submit(self):
         pass
+
+    # --------------------------------------------------------------------------------------------------------
+
+    def set_scale(self):
+        """Sets the scale based on the value of the field."""
+        value_str = str(self.value)
+        if '.' in value_str:
+            int_part, frac_part = value_str.split('.')
+        else:
+            int_part, frac_part = value_str, '0'
+        
+        # Perform necessary operations with int_part and frac_part
+        # For example, setting the scale based on the length of frac_part
+        self.scale = len(frac_part)
 
     def start_doc_series(self):
         """Initialize the document series."""
@@ -119,11 +126,12 @@ class Datafield(Document):
                 "parentfield": "datafield_series_table"
             }
             self.append("datafield_series_table", series_entry)
+            self.save()
+            frappe.db.commit()
             print("Datafield Series entry created successfully.")
         except Exception as e:
             frappe.log_error(f"An error occurred: {e}", "DataField Series Initialization Error")
             print(f"An error occurred: {e}")
-
 
     @frappe.whitelist()
     def extend_doc_series(self, day: int = 0):
@@ -137,7 +145,7 @@ class Datafield(Document):
                 "high": self.value,
                 "low": self.value,
                 "close": self.value,
-                "volume": 1,
+                "volume": 0,
                 "parent": self.name,
                 "parenttype": "Datafield",
                 "parentfield": "datafield_series_table"
@@ -148,18 +156,7 @@ class Datafield(Document):
             pass
         except Exception as e:
             frappe.log_error(f"An error occurred: {e}", "Extend Doc Series Error")
-    
 
-
-    @frappe.whitelist()
-    def save_incoming_alert(self, full_json):
-        self.append("Datafield Incoming Alert Table", {
-            "json": json.dump(full_json.get("datafield"), ident=4)
-        })
-        self.save()
-
-        return
-    
     @frappe.whitelist()
     def get_last_series(self):
         return self.datafield_series_table[-1]
@@ -208,63 +205,14 @@ class Datafield(Document):
             self.n = n
             
             self.update_doc_series(value, n)
-            self.save_incoming_alert(full_json)
             self.save()
 
-            #frappe.db.commit()
+            frappe.db.commit()
             return
         
         except Exception as e:
             frappe.db.rollback()
             print(f"An error occurred: {e}")
-
-@staticmethod
-def generate_files():
-    settings = frappe.get_single("TV Data Settings")
-    base_dir = 'tv_data'
-    data_dir = os.path.join(base_dir, 'data')
-    symbol_info_dir = os.path.join(base_dir, 'symbol_info')
-    github_dir = os.path.join(base_dir, '.github')
-
-    os.makedirs(data_dir, exist_ok=True)
-    os.makedirs(symbol_info_dir, exist_ok=True)
-    os.makedirs(github_dir, exist_ok=True)
-
-    storage_data = []
-
-    datafields = frappe.get_all('Datafield', fields=['name', 'user', 'key', 'value'])
-
-    for datafield in datafields:
-        # Generate CSV file
-        csv_file_path = os.path.join(data_dir, f"{datafield['name']}.csv")
-        with open(csv_file_path, mode='w', newline='') as csv_file:
-            csv_writer = csv.writer(csv_file)
-            # Assuming the first row should contain timestamps starting from now
-            csv_writer.writerow([datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), datafield['value']])
-            # Add additional rows as per requirement
-
-        # Generate JSON file for symbol info
-        json_file_path = os.path.join(symbol_info_dir, f"seed_{datafield['name']}_{datafield['key']}.json")
-        with open(json_file_path, 'w') as json_file:
-            json.dump({
-                "symbol": datafield['name'],
-                "description": datafield['key'],
-                "value": datafield['value']
-            }, json_file, indent=4)
-
-        # Prepare storage data structure
-        storage_data.append({
-            "symbol": datafield['name'],
-            "description": datafield['key'],
-            "path": csv_file_path
-        })
-
-    # Generate storage JSON file
-    storage_file_path = os.path.join(base_dir, f'{settings.fork_name}.json')
-    with open(storage_file_path, 'w') as json_file:
-        json.dump(storage_data, json_file, indent=4)
-
-    return f"Files generated successfully in {base_dir}"
 
 def extend_all_series():
     try:
@@ -280,3 +228,52 @@ def extend_all_series():
     except Exception as e:
         frappe.db.rollback()
         print(f"An error occurred: {e}")
+
+
+# @staticmethod
+# def generate_files():
+#     settings = frappe.get_single("TV Data Settings")
+#     base_dir = 'tv_data'
+#     data_dir = os.path.join(base_dir, 'data')
+#     symbol_info_dir = os.path.join(base_dir, 'symbol_info')
+#     github_dir = os.path.join(base_dir, '.github')
+
+#     os.makedirs(data_dir, exist_ok=True)
+#     os.makedirs(symbol_info_dir, exist_ok=True)
+#     os.makedirs(github_dir, exist_ok=True)
+
+#     storage_data = []
+
+#     datafields = frappe.get_all('Datafield', fields=['name', 'user', 'key', 'value'])
+
+#     for datafield in datafields:
+#         # Generate CSV file
+#         csv_file_path = os.path.join(data_dir, f"{datafield['name']}.csv")
+#         with open(csv_file_path, mode='w', newline='') as csv_file:
+#             csv_writer = csv.writer(csv_file)
+#             # Assuming the first row should contain timestamps starting from now
+#             csv_writer.writerow([datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), datafield['value']])
+#             # Add additional rows as per requirement
+
+#         # Generate JSON file for symbol info
+#         json_file_path = os.path.join(symbol_info_dir, f"seed_{datafield['name']}_{datafield['key']}.json")
+#         with open(json_file_path, 'w') as json_file:
+#             json.dump({
+#                 "symbol": datafield['name'],
+#                 "description": datafield['key'],
+#                 "value": datafield['value']
+#             }, json_file, indent=4)
+
+#         # Prepare storage data structure
+#         storage_data.append({
+#             "symbol": datafield['name'],
+#             "description": datafield['key'],
+#             "path": csv_file_path
+#         })
+
+#     # Generate storage JSON file
+#     storage_file_path = os.path.join(base_dir, f'{settings.fork_name}.json')
+#     with open(storage_file_path, 'w') as json_file:
+#         json.dump(storage_data, json_file, indent=4)
+
+#     return f"Files generated successfully in {base_dir}"
