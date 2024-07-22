@@ -87,6 +87,7 @@
    "fieldtype": "Float",
    "label": "Value",
    "precision": "9",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -131,7 +132,8 @@
    "description": "Latest Value",
    "fieldname": "n",
    "fieldtype": "Int",
-   "label": "N"
+   "label": "N",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_osup",
@@ -162,16 +164,11 @@
  "links": [
   {
    "group": "Child",
-   "link_doctype": "Datafield Incoming Alert Table",
-   "link_fieldname": "name"
-  },
-  {
-   "group": "Child",
    "link_doctype": "Datafield Series",
    "link_fieldname": "name"
   }
  ],
- "modified": "2024-07-21 09:17:43.536987",
+ "modified": "2024-07-21 14:36:42.313848",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",

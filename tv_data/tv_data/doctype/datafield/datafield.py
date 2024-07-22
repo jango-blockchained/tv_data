@@ -39,10 +39,6 @@ class Datafield(Document):
     @property
     def last_modified(self):
         return self.modified
-    
-    @property
-    def incoming_alert_count(self):
-        return len(self.datafield_incoming_alert_table)
 
     @property
     def series_count(self):
@@ -75,7 +71,7 @@ class Datafield(Document):
     def on_update(self):
         """Check if the value has changed and updates the series."""
         if hasattr(self, '_original_value') and self.value != self._original_value:
-            self.handle_new_data(self.value, self.n, self.json)
+            self.handle_new_data(self.value, self.n)
 
     def key_exists(self):
         """Check if a Datafield with the specified key or name and user already exists."""
@@ -100,16 +96,25 @@ class Datafield(Document):
     # --------------------------------------------------------------------------------------------------------
 
     def set_scale(self):
-        """Sets the scale based on the value of the field."""
-        value_str = str(self.value)
-        if '.' in value_str:
-            int_part, frac_part = value_str.split('.')
-        else:
-            int_part, frac_part = value_str, '0'
-        
-        # Perform necessary operations with int_part and frac_part
-        # For example, setting the scale based on the length of frac_part
-        self.scale = len(frac_part)
+        """
+        Sets the pricescale based on the number of decimal places in the value.
+        Args:
+            self: The Datafield document object.
+        """
+        if not self.value:
+            # Handle case where value is empty or None
+            self.pricescale = 1
+            return
+
+        try:
+            integer_part, fractional_part = str(self.value).split(".")
+        except ValueError:
+            self.pricescale = 1
+            return
+
+        # Calculate the scale based on the number of decimal places
+        decimal_places = len(fractional_part)
+        self.pricescale = 10 ** decimal_places
 
     def start_doc_series(self):
         """Initialize the document series."""
@@ -185,12 +190,9 @@ class Datafield(Document):
                     elif n == 4:
                         last_series.close = value
 
-            # Save changes to the parent document (including its child table)
             self.save()
+            frappe.msgprint(f"Updated datafield '{self.name}'")
             return
-
-            # Notify the user of success
-            # frappe.msgprint(f"Updated datafield '{self.name}'")
 
         except Exception as e:
             # Log and raise error messages
@@ -198,7 +200,7 @@ class Datafield(Document):
             frappe.throw(f"An error occurred: {e}")
 
     @frappe.whitelist()
-    def handle_new_data(self, value, n, full_json):
+    def handle_new_data(self, value, n):
         try:
             # Update the value of the parent document
             self.value = value
