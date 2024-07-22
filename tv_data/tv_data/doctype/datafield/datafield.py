@@ -5,29 +5,46 @@ import json
 import csv
 import datetime
 
-def get_doc_from_user_key(user, key, insert=False):
-    query = {
-        "doctype": "Datafield",
-        "key": key,
-        "user": user
-    }
+from typing import Dict, Optional, cast
 
-    if frappe.db.exists(query):
-        return frappe.get_doc(query)
-    else:
-        if insert:
-            doc = frappe.new_doc("Datafield")
-            doc.key = key
-            doc.user = user
-            doc.insert(ignore_permissions=True)
-            return doc
+
+def get_doc_from_user_key(
+    user: str, key: str, insert: bool = False
+) -> Optional[Document]:
+    """
+    Get the document associated with the key and user.
+
+    Args:
+        user (str): The user associated with the document.
+        key (str): The key of the document.
+        insert (bool, optional): Whether to insert a new document if not found. Defaults to False.
+
+    Returns:
+        Optional[Document]: The document associated with the key and user if found, None otherwise.
+    """
+    query: Dict[str, str] = {"doctype": "Datafield", "key": key, "user": user}
+
+    try:
+        if frappe.db.exists(query):
+            return cast(Optional[Document], frappe.get_doc(query))
         else:
-            return None
+            if insert:
+                doc: Document = frappe.new_doc("Datafield")
+                doc.run_method("autoname")
+                doc.key = key
+                doc.user = user
+                doc.insert(ignore_permissions=True)
+                return doc
+            else:
+                return None
+    except Exception:
+        return None
+
 
 def get_series_date(days: int = 0):
     current_date = datetime.datetime.now()
     adjusted_date = current_date + datetime.timedelta(days=days)
-    return adjusted_date.strftime('%Y%m%dT')
+    return adjusted_date.strftime("%Y%m%dT")
 
 
 class Datafield(Document):
@@ -48,20 +65,16 @@ class Datafield(Document):
 
     def autoname(self):
         """Generates a unique name for the Datafield document."""
-        if self.is_new():
-        #     if self.exists():
-        #         frappe.throw(f"A Datafield with description '{self.name}' already exists for user '{self.user}'.")
+        if self.is_new() and not self.name and self.key:
+            # Generate a unique name using the key
+            self.key = self.key.upper()
             hash_part = frappe.generate_hash(length=16).upper()
             self.name = f"DATA_{hash_part}_{self.key}"
-        return
 
     def before_insert(self):
         """Check if a Datafield with the same key and user already exists before inserting."""
-        if self.key_exists():
-            frappe.throw(f"A Datafield with description '{self.key}' already exists for user '{self.user}'.")
         self.set_scale()
         self.start_doc_series()
-        return
 
     def before_save(self):
         """Store the original value of the field before it is updated."""
@@ -70,16 +83,14 @@ class Datafield(Document):
 
     def on_update(self):
         """Check if the value has changed and updates the series."""
-        if hasattr(self, '_original_value') and self.value != self._original_value:
+        if hasattr(self, "_original_value") and self.value != self._original_value:
             self.handle_new_data(self.value, self.n)
 
     def key_exists(self):
         """Check if a Datafield with the specified key or name and user already exists."""
-        return frappe.db.exists({
-                "doctype": "Datafield",
-                "key": self.key,
-                "user": self.user
-            })
+        return frappe.db.exists(
+            {"doctype": "Datafield", "key": self.key, "user": self.user}
+        )
 
     def validate(self):
         pass
@@ -114,7 +125,7 @@ class Datafield(Document):
 
         # Calculate the scale based on the number of decimal places
         decimal_places = len(fractional_part)
-        self.pricescale = 10 ** decimal_places
+        self.pricescale = 10**decimal_places
 
     def start_doc_series(self):
         """Initialize the document series."""
@@ -128,14 +139,16 @@ class Datafield(Document):
                 "volume": 1,
                 "parent": self.name,
                 "parenttype": "Datafield",
-                "parentfield": "datafield_series_table"
+                "parentfield": "datafield_series_table",
             }
             self.append("datafield_series_table", series_entry)
             self.save()
             frappe.db.commit()
             print("Datafield Series entry created successfully.")
         except Exception as e:
-            frappe.log_error(f"An error occurred: {e}", "DataField Series Initialization Error")
+            frappe.log_error(
+                f"An error occurred: {e}", "DataField Series Initialization Error"
+            )
             print(f"An error occurred: {e}")
 
     @frappe.whitelist()
@@ -153,7 +166,7 @@ class Datafield(Document):
                 "volume": 0,
                 "parent": self.name,
                 "parenttype": "Datafield",
-                "parentfield": "datafield_series_table"
+                "parentfield": "datafield_series_table",
             }
             self.append("datafield_series_table", new_entry)
             self.save()
@@ -205,16 +218,17 @@ class Datafield(Document):
             # Update the value of the parent document
             self.value = value
             self.n = n
-            
+
             self.update_doc_series(value, n)
             self.save()
 
             frappe.db.commit()
             return
-        
+
         except Exception as e:
             frappe.db.rollback()
             print(f"An error occurred: {e}")
+
 
 def extend_all_series():
     try:
