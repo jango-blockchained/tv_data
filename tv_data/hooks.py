@@ -4,7 +4,7 @@ app_publisher = "cryptolinx <jango_blockchained>"
 app_description = "TV custom storage for HOOX API Gateway Service."
 app_email = "info@cryptolinx.de"
 app_license = "mit"
-required_apps = ["hoox"]
+required_apps = []
 
 # Includes in <head>
 # ------------------
@@ -135,9 +135,7 @@ required_apps = ["hoox"]
 
 scheduler_events = {
     "cron": {
-        "19 * * * *": [
-            "tv_data.tv_data.doctype.datafield.datafield.extend_all_series"
-        ]
+        "19 * * * *": ["tv_data.tv_data.doctype.datafield.datafield.extend_all_series"]
     }
 }
 # 		"tv_data.tasks.all"
