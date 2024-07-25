@@ -57,14 +57,12 @@
   },
   {
    "allow_in_quick_entry": 1,
-   "default": "1",
    "description": "Set only once.",
    "fieldname": "scale",
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "Scale",
    "non_negative": 1,
-   "reqd": 1,
    "set_only_once": 1
   },
   {
@@ -168,7 +166,7 @@
    "link_fieldname": "name"
   }
  ],
- "modified": "2024-07-23 00:56:21.684470",
+ "modified": "2024-07-23 18:38:31.558651",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",
