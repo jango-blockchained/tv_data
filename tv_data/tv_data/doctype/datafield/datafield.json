@@ -19,16 +19,25 @@
   "type",
   "section_break_nhzo",
   "key",
-  "scale",
   "column_break_moka",
-  "value",
-  "n",
+  "scale",
   "data_series_section",
   "daily_chart",
   "section_break_tpji",
   "created",
   "column_break_nosw",
   "last_modified",
+  "updates_tab",
+  "latest_section",
+  "value",
+  "column_break_astf",
+  "n",
+  "section_break_jrux",
+  "datetime_lptc",
+  "column_break_jxkx",
+  "duration_lgre",
+  "section_break_ukfk",
+  "table_zuql",
   "data_series_tab",
   "datafield_series_table"
  ],
@@ -63,6 +72,7 @@
    "in_list_view": 1,
    "label": "Scale",
    "non_negative": 1,
+   "reqd": 1,
    "set_only_once": 1
   },
   {
@@ -90,7 +100,7 @@
   {
    "fieldname": "data_series_tab",
    "fieldtype": "Tab Break",
-   "label": "Data Series"
+   "label": "Series"
   },
   {
    "columns": 1,
@@ -157,6 +167,48 @@
    "fieldname": "daily_chart",
    "fieldtype": "HTML",
    "label": "Daily Chart"
+  },
+  {
+   "fieldname": "updates_tab",
+   "fieldtype": "Tab Break",
+   "label": "Updates"
+  },
+  {
+   "fieldname": "column_break_astf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ukfk",
+   "fieldtype": "Section Break",
+   "label": "Updates"
+  },
+  {
+   "fieldname": "table_zuql",
+   "fieldtype": "Table",
+   "options": "Datafield Update Table"
+  },
+  {
+   "fieldname": "latest_section",
+   "fieldtype": "Section Break",
+   "label": "Latest"
+  },
+  {
+   "fieldname": "section_break_jrux",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "datetime_lptc",
+   "fieldtype": "Datetime",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_jxkx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "duration_lgre",
+   "fieldtype": "Duration",
+   "read_only": 1
   }
  ],
  "links": [
@@ -166,7 +218,7 @@
    "link_fieldname": "name"
   }
  ],
- "modified": "2024-07-23 18:38:31.558651",
+ "modified": "2024-07-25 23:03:44.255388",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",
