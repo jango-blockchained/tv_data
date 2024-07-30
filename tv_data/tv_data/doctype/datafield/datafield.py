@@ -4,22 +4,9 @@ import datetime
 from typing import Dict, Optional, List, Any, Union
 
 
-def exists_doc_from_user_key(key: str, user: str) -> bool:
-    """
-    Check if a Datafield with the specified key and user combination already exists.
-
-    Args:
-        key (str): The key of the Datafield.
-        user (str): The user associated with the Datafield.
-
-    Returns:
-        bool: True if the combination exists, False otherwise.
-    """
-    return frappe.db.exists({"doctype": "Datafield", "key": key, "user": user})
-
-
 def get_doc_from_user_key(
-    user: str, key: str, insert: bool = False
+    user: str,
+    df: object = None,
 ) -> Optional[Document]:
     """
     Get the document associated with the key and user.
@@ -32,28 +19,24 @@ def get_doc_from_user_key(
     Returns:
         Optional[Document]: The document associated with the key and user if found, None otherwise.
     """
-    query: Dict[str, str] = {"doctype": "Datafield", "key": key, "user": user}
+    query: Dict[str, str] = {"key": df.key.upper(), "user": user}
 
     try:
-        if frappe.db.exists(query):
-            return frappe.get_doc(query)
-        elif insert:
-
-            doc = frappe.get_doc(
-                {
-                    "doctype": "Datafield",
-                    "name": generate_unique_name(key),
-                    "key": key,
-                    "user": user,
-                }
-            )
-            doc.insert(ignore_permissions=True)
-
+        if frappe.db.exists("Datafield", query):
+            return frappe.get_doc("Datafield", query)
+        elif df.insert:
+            doc = frappe.new_doc("Datafield")
+            doc.key = df.key
+            doc.value = df.value
+            doc.n = df.n
+            doc.user = user
+            doc.insert_update(df.value, df.n)
+            doc.insert()
+            # doc.save(ignore_permissions=True)
             return doc
         else:
             return None
     except Exception as e:
-
         frappe.log_error(f"Error in get_doc_from_user_key: {str(e)}", "Datafield Error")
         return None
 
@@ -106,9 +89,15 @@ class Datafield(Document):
         """Return the count of series entries in the document."""
         return len(self.datafield_series_table)
 
+    @property
+    def update_count(self) -> int:
+        """Return the count of series entries in the document."""
+        return len(self.datafield_update_table)
+
     def before_insert(self) -> None:
         """Perform actions before inserting the document."""
         self.set_scale()
+        self.set_type()
         self.start_doc_series()
 
     def before_save(self) -> None:
@@ -119,7 +108,7 @@ class Datafield(Document):
     def on_update(self) -> None:
         """Check if the value has changed and updates the series."""
         if hasattr(self, "_original_value") and self.value != self._original_value:
-            self.handle_new_data(self.value, self.n)
+            self.insert_update(self.value, self.n)
 
     def key_exists(self) -> bool:
         """Check if a Datafield with the specified key or name and user already exists."""
@@ -141,7 +130,7 @@ class Datafield(Document):
 
         # Check for unique key-user combination
         if self.is_new() and frappe.db.exists(
-            "Datafield", {"key": self.key, "user": self.user}
+            "Datafield", {"key": self.key.upper(), "user": self.user}
         ):
             frappe.throw(
                 f"A Datafield with key '{self.key}' already exists for user '{self.user}'"
@@ -150,6 +139,7 @@ class Datafield(Document):
     def set_scale(self) -> None:
         """Sets the pricescale based on the number of decimal places in the value."""
         if not self.value:
+            print("no value")
             self.scale = 1
             return
         value_str = str(self.value)
@@ -165,6 +155,17 @@ class Datafield(Document):
             self.scale = 10 ** len(fractional_part)
         except ValueError:
             self.scale = 1
+
+    def set_type(self) -> None:
+        """Sets the type of the Datafield."""
+        try:
+            if self.n in (1, 2, 3, 4):
+                self.type = "Dynamic Value"
+            else:
+                self.type = "OHLCV Series"
+        except AttributeError:
+            # Handle the case where self.n is None
+            self.type = "OHLCV Series"
 
     def start_doc_series(self) -> None:
         """Initialize the document series."""
@@ -189,52 +190,72 @@ class Datafield(Document):
     def extend_doc_series(self, day: int = 0) -> None:
         """Extends the doc series for the Datafield document."""
         try:
-            new_entry = {
-                "date_string": get_series_date(day),
-                "open": self.value,
-                "high": self.value,
-                "low": self.value,
-                "close": self.value,
-                "volume": 0,
-                "parent": self.name,
-                "parenttype": "Datafield",
-                "parentfield": "datafield_series_table",
-            }
-            self.append("datafield_series_table", new_entry)
+            m = self.merge_updates(day)
+            m.update(
+                {
+                    "date_string": get_series_date(day),
+                    "parent": self.name,
+                    "parenttype": "Datafield",
+                    "parentfield": "datafield_series_table",
+                }
+            )
+            self.append("datafield_series_table", m)
         except Exception as e:
             frappe.log_error(f"Error in extend_doc_series: {str(e)}", "Datafield Error")
             raise
 
     @frappe.whitelist()
-    def update_doc_series(
-        self, value: Union[int, float], n: Optional[int] = None
-    ) -> None:
-        """Update or insert a Datafield document and its series table."""
+    def insert_update(self, value: Union[int, float], n: Optional[int]) -> None:
+        """Handle new data for the Datafield."""
 
         try:
-            if self.datafield_series_table:
-                last_series = self.datafield_series_table[-1]
-                last_series.volume += 1
-                if not n and last_series:
-                    last_series.close = value
-                    last_series.high = max(last_series.high, value)
-                    last_series.low = min(last_series.low, value)
-                elif n in [1, 2, 3, 4]:
-                    field_map = {1: "open", 2: "high", 3: "low", 4: "close"}
-                    setattr(last_series, field_map[n], value)
+            new_entry = {
+                "date_string": get_series_date(),
+                "value": value,
+                "n": n,
+                "parenttype": "Datafield",
+                "parentfield": "datafield_update_table",
+            }
+            self.append("datafield_update_table", new_entry)
         except Exception as e:
-            frappe.log_error(f"Error in update_doc_series: {str(e)}", "Datafield Error")
+            frappe.log_error(
+                f"Error in update_doc_series: {str(e)}", "Datafield Update Error"
+            )
             raise
 
-    @frappe.whitelist()
-    def handle_new_data(self, value: Union[int, float], n: Optional[int]) -> None:
-        """Handle new data for the Datafield."""
+    def merge_updates(self, day: int = 0) -> Dict[str, Union[int, float]]:
+        """Merge all open updates in the update table into the series table, to create a time series with OHLCV data.
+
+        Args:
+            day (int): The number of days to extend the series. Defaults to 0.
+
+        Returns:
+            Dict[str, Union[int, float]]: A dictionary containing the merged
+            values for the series.
+        """
         try:
-            self.value = value
-            self.n = n
-            self.update_doc_series(value, n)
+            if not self.datafield_update_table:
+                return self.datafield_series_table[-1].as_dict()
+
+            updates = self.datafield_update_table
+            _open = updates[0].value
+            _close = updates[-1].value
+            _high = updates[0].value
+            _low = updates[0].value
+            _volume = len(updates)
+            for update in updates:
+                _high = max(_high, update.value)
+                _low = min(_low, update.value)
+                update.delete()
+            return {
+                "open": _open,
+                "high": _high,
+                "low": _low,
+                "close": _close,
+                "volume": _volume,
+            }
         except Exception as e:
-            frappe.log_error(f"Error in handle_new_data: {str(e)}", "Datafield Error")
+            frappe.log_error(f"Error in merge_updates: {str(e)}", "Datafield Error")
             raise
 
 
