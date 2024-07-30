@@ -30,9 +30,9 @@ def get_doc_from_user_key(
             doc.value = df.value
             doc.n = df.n
             doc.user = user
-            doc.insert_update(df.value, df.n)
             doc.insert()
-            # doc.save(ignore_permissions=True)
+            doc.insert_update(df.value, df.n)
+            doc.save(ignore_permissions=True)
             return doc
         else:
             return None
@@ -110,12 +110,6 @@ class Datafield(Document):
         if hasattr(self, "_original_value") and self.value != self._original_value:
             self.insert_update(self.value, self.n)
 
-    def key_exists(self) -> bool:
-        """Check if a Datafield with the specified key or name and user already exists."""
-        return frappe.db.exists(
-            {"doctype": "Datafield", "key": self.key, "user": self.user}
-        )
-
     def autoname(self) -> None:
         """Generates a unique name for the Datafield document."""
         if self.is_new():
@@ -123,6 +117,8 @@ class Datafield(Document):
 
     def validate(self) -> None:
         """Validate the document before saving."""
+        self.key = self.key.upper()
+
         if not self.key:
             frappe.throw("Key is required for Datafield")
         if not self.user:
@@ -209,10 +205,12 @@ class Datafield(Document):
         """Handle new data for the Datafield."""
 
         try:
+            print("insert update")
             new_entry = {
                 "date_string": get_series_date(),
                 "value": value,
                 "n": n,
+                "parent": self.name,
                 "parenttype": "Datafield",
                 "parentfield": "datafield_update_table",
             }

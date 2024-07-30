@@ -87,7 +87,6 @@
    "set_only_once": 1
   },
   {
-   "default": "0",
    "description": "Latest Value",
    "fieldname": "value",
    "fieldtype": "Float",
@@ -215,7 +214,7 @@
    "link_fieldname": "name"
   }
  ],
- "modified": "2024-07-29 23:42:48.697622",
+ "modified": "2024-07-30 22:54:45.660254",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",
