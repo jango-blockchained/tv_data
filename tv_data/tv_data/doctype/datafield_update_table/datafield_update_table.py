@@ -8,11 +8,6 @@ from frappe.model.document import Document
 class DatafieldUpdateTable(Document):
 
     @property
-    def time_received(self) -> str:
-        """Return the creation date of the document."""
-        return self.creation
-
-    @property
     def update_id(self) -> str:
         return self.name
 

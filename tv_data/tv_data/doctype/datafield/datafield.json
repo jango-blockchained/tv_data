@@ -2,7 +2,9 @@
  "actions": [],
  "allow_copy": 1,
  "allow_events_in_timeline": 1,
+ "allow_import": 1,
  "creation": "2024-07-12 00:24:12.255284",
+ "default_view": "List",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -200,8 +202,21 @@
    "options": "Datafield Update Table"
   }
  ],
- "links": [],
- "modified": "2024-07-31 13:00:28.812346",
+ "links": [
+  {
+   "link_doctype": "Datafield Update Table",
+   "link_fieldname": "parent"
+  },
+  {
+   "link_doctype": "Datafield Series",
+   "link_fieldname": "parent"
+  },
+  {
+   "link_doctype": "Datafield Merged Update",
+   "link_fieldname": "datafield"
+  }
+ ],
+ "modified": "2024-07-31 16:59:19.806660",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",

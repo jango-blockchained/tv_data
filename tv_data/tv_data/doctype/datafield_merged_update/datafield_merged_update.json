@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "format:MERGED-UPD-{#######}",
+ "autoname": "format:MERGED-UPD-{########}",
  "creation": "2024-07-31 13:03:18.735638",
  "default_view": "List",
  "doctype": "DocType",
@@ -37,7 +37,6 @@
    "default": "0",
    "fieldname": "n",
    "fieldtype": "Int",
-   "in_list_view": 1,
    "label": "N",
    "length": 1,
    "non_negative": 1,
@@ -46,8 +45,10 @@
   {
    "fieldname": "datafield",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Datafield",
-   "options": "Datafield"
+   "options": "Datafield",
+   "search_index": 1
   },
   {
    "fieldname": "column_break_jukh",
@@ -60,6 +61,7 @@
   {
    "fieldname": "datafield_update",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Datafield Update"
   },
   {
@@ -69,12 +71,12 @@
   {
    "fieldname": "time_received",
    "fieldtype": "Datetime",
+   "in_list_view": 1,
    "label": "Time Received"
   }
  ],
- "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-31 14:35:17.715449",
+ "modified": "2024-07-31 17:30:42.372710",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield Merged Update",

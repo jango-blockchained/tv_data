@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "format:UPD-{#######}",
+ "autoname": "format:UPD-{########}",
  "creation": "2024-07-25 22:17:21.332428",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -42,7 +42,6 @@
    "fieldname": "time_received",
    "fieldtype": "Datetime",
    "in_standard_filter": 1,
-   "is_virtual": 1,
    "label": "Time Received "
   },
   {
@@ -55,7 +54,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-07-31 14:35:41.410074",
+ "modified": "2024-07-31 17:03:42.693556",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield Update Table",
