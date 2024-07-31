@@ -27,11 +27,11 @@ def get_doc_from_user_key(
         elif df.insert:
             doc = frappe.new_doc("Datafield")
             doc.key = df.key
-            doc.value = df.value
-            doc.n = df.n
+            doc.value = float(df.value)
+            doc.n = int(df.n)
             doc.user = user
             doc.insert()
-            doc.insert_update(df.value, df.n)
+            # doc.insert_update(df.value, df.n)
             doc.save(ignore_permissions=True)
             return doc
         else:
@@ -96,6 +96,7 @@ class Datafield(Document):
 
     def before_insert(self) -> None:
         """Perform actions before inserting the document."""
+
         self.set_scale()
         self.set_type()
         self.start_doc_series()
@@ -108,6 +109,7 @@ class Datafield(Document):
     def on_update(self) -> None:
         """Check if the value has changed and updates the series."""
         if hasattr(self, "_original_value") and self.value != self._original_value:
+            self.value = float(self.value)
             self.insert_update(self.value, self.n)
 
     def autoname(self) -> None:
@@ -134,11 +136,11 @@ class Datafield(Document):
 
     def set_scale(self) -> None:
         """Sets the pricescale based on the number of decimal places in the value."""
-        if not self.value:
+        if self.value is None:
             print("no value")
             self.scale = 1
             return
-        value_str = str(self.value)
+        value_str = str(float(self.value))
         if "." in value_str:
             separator = "."
         elif "," in value_str:
@@ -201,14 +203,14 @@ class Datafield(Document):
             raise
 
     @frappe.whitelist()
-    def insert_update(self, value: Union[int, float], n: Optional[int]) -> None:
+    def insert_update(self, value: float, n: Optional[int]) -> None:
         """Handle new data for the Datafield."""
 
         try:
             print("insert update")
             new_entry = {
                 "date_string": get_series_date(),
-                "value": value,
+                "value": float(value),
                 "n": n,
                 "parent": self.name,
                 "parenttype": "Datafield",
@@ -236,15 +238,26 @@ class Datafield(Document):
                 return self.datafield_series_table[-1].as_dict()
 
             updates = self.datafield_update_table
-            _open = updates[0].value
-            _close = updates[-1].value
-            _high = updates[0].value
-            _low = updates[0].value
+            _open: float = updates[0].value
+            _close: float = updates[-1].value
+            _high: float = updates[0].value
+            _low: float = updates[0].value
             _volume = len(updates)
+            _update = None
             for update in updates:
-                _high = max(_high, update.value)
-                _low = min(_low, update.value)
+                _high = max(_high, float(update.value))
+                _low = min(_low, float(update.value))
+                _update = update
+                _update.update(
+                    {
+                        "datafield": self.name,
+                        "datafield_update": update.name,
+                    }
+                )
+                new_entry = frappe.get_doc("Datafield Merged Update", _update)
+                new_entry.insert(ignore_permissions=True)
                 update.delete()
+
             return {
                 "open": _open,
                 "high": _high,

@@ -1,0 +1,100 @@
+{
+ "actions": [],
+ "autoname": "format:MERGED-UPD-{#######}",
+ "creation": "2024-07-31 13:03:18.735638",
+ "default_view": "List",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "datafield",
+  "column_break_jukh",
+  "datafield_update",
+  "section_break_sxqt",
+  "date_string",
+  "time_received",
+  "column_break_nvow",
+  "value",
+  "n"
+ ],
+ "fields": [
+  {
+   "fieldname": "date_string",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Date String",
+   "length": 9,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "value",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Value",
+   "precision": "9",
+   "set_only_once": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "n",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "N",
+   "length": 1,
+   "non_negative": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "datafield",
+   "fieldtype": "Link",
+   "label": "Datafield",
+   "options": "Datafield"
+  },
+  {
+   "fieldname": "column_break_jukh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_sxqt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "datafield_update",
+   "fieldtype": "Data",
+   "label": "Datafield Update"
+  },
+  {
+   "fieldname": "column_break_nvow",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "time_received",
+   "fieldtype": "Datetime",
+   "label": "Time Received"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-07-31 14:35:17.715449",
+ "modified_by": "Administrator",
+ "module": "TV Data",
+ "name": "Datafield Merged Update",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

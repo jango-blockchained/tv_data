@@ -1,12 +1,5 @@
 {
- "actions": [
-  {
-   "action": "tv_data.tv_data.doctype.datafield.datafield.Datafield.extend_doc_series",
-   "action_type": "Server Action",
-   "group": "Data Series",
-   "label": "Extend"
-  }
- ],
+ "actions": [],
  "allow_copy": 1,
  "allow_events_in_timeline": 1,
  "creation": "2024-07-12 00:24:12.255284",
@@ -207,14 +200,8 @@
    "options": "Datafield Update Table"
   }
  ],
- "links": [
-  {
-   "group": "Child",
-   "link_doctype": "Datafield Series",
-   "link_fieldname": "name"
-  }
- ],
- "modified": "2024-07-30 22:54:45.660254",
+ "links": [],
+ "modified": "2024-07-31 13:00:28.812346",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",

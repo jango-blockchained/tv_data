@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"EFWvLMyqUI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">TV Data</span>\",\"col\":12}},{\"id\":\"Pi3pltUU3l\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Datafield\",\"col\":3}},{\"id\":\"u0pM4Iq9QI\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Datafield Series\",\"col\":3}},{\"id\":\"TG-znwoW88\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"TV Data Settings\",\"col\":3}}]",
+ "content": "[{\"id\":\"EFWvLMyqUI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">TV Data</span>\",\"col\":12}},{\"id\":\"Pi3pltUU3l\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Datafield\",\"col\":3}},{\"id\":\"nJlm3wNfdv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Datafield Merged Update\",\"col\":3}},{\"id\":\"TG-znwoW88\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"TV Data Settings\",\"col\":3}}]",
  "creation": "2024-07-12 00:14:58.964435",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "TV Data",
  "links": [],
- "modified": "2024-07-17 04:49:15.420632",
+ "modified": "2024-07-31 13:31:46.282867",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "TV Data",
@@ -33,10 +33,11 @@
    "type": "DocType"
   },
   {
-   "color": "Green",
+   "color": "Grey",
    "doc_view": "List",
-   "label": "Datafield Series",
-   "link_to": "Datafield Series",
+   "format": "{}",
+   "label": "Datafield Merged Update",
+   "link_to": "Datafield Merged Update",
    "stats_filter": "[]",
    "type": "DocType"
   },
