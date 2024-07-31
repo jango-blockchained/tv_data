@@ -109,7 +109,6 @@ class Datafield(Document):
     def on_update(self) -> None:
         """Check if the value has changed and updates the series."""
         if hasattr(self, "_original_value") and self.value != self._original_value:
-            self.value = float(self.value)
             self.insert_update(self.value, self.n)
 
     def autoname(self) -> None:
@@ -126,7 +125,6 @@ class Datafield(Document):
         if not self.user:
             frappe.throw("User is required for Datafield")
 
-        # Check for unique key-user combination
         if self.is_new() and frappe.db.exists(
             "Datafield", {"key": self.key.upper(), "user": self.user}
         ):
@@ -137,7 +135,6 @@ class Datafield(Document):
     def set_scale(self) -> None:
         """Sets the pricescale based on the number of decimal places in the value."""
         if self.value is None:
-            print("no value")
             self.scale = 1
             return
         value_str = str(float(self.value))
@@ -207,7 +204,6 @@ class Datafield(Document):
         """Handle new data for the Datafield."""
 
         try:
-            print("insert update")
             new_entry = {
                 "date_string": get_series_date(),
                 "value": float(value),
@@ -223,51 +219,71 @@ class Datafield(Document):
             )
             raise
 
-    def merge_updates(self, day: int = 0) -> Dict[str, Union[int, float]]:
-        """Merge all open updates in the update table into the series table, to create a time series with OHLCV data.
 
-        Args:
-            day (int): The number of days to extend the series. Defaults to 0.
+def merge_updates(self, day: int = 0) -> Dict[str, Union[int, float]]:
+    """Merge all open updates in the update table, prepare OHLCV data, and handle the movement of updates to Datafield Merged Update.
 
-        Returns:
-            Dict[str, Union[int, float]]: A dictionary containing the merged
-            values for the series.
-        """
+    Args:
+        day (int): The number of days to extend the series. Defaults to 0.
+
+    Returns:
+        Dict[str, Union[int, float]]: A dictionary containing the merged
+        values for the series.
+    """
+    try:
+        if not self.datafield_update_table:
+            return (
+                self.datafield_series_table[-1].as_dict()
+                if self.datafield_series_table
+                else {}
+            )
+
+        updates = self.datafield_update_table
+        _open: float = updates[0].value
+        _close: float = updates[-1].value
+        _high: float = _open
+        _low: float = _open
+        _volume = len(updates)
+
+        # Start transaction
+        frappe.db.begin()
+
         try:
-            if not self.datafield_update_table:
-                return self.datafield_series_table[-1].as_dict()
-
-            updates = self.datafield_update_table
-            _open: float = updates[0].value
-            _close: float = updates[-1].value
-            _high: float = updates[0].value
-            _low: float = updates[0].value
-            _volume = len(updates)
-            _update = None
             for update in updates:
-                _high = max(_high, float(update.value))
-                _low = min(_low, float(update.value))
-                _update = update
-                _update.update(
+                _high = max(_high, update.value)
+                _low = min(_low, update.value)
+
+                merged_update = frappe.get_doc(
                     {
+                        "doctype": "Datafield Merged Update",
                         "datafield": self.name,
                         "datafield_update": update.name,
+                        "value": update.value,
                     }
                 )
-                new_entry = frappe.get_doc("Datafield Merged Update", _update)
-                new_entry.insert(ignore_permissions=True)
+                merged_update.insert(ignore_permissions=True)
                 update.delete()
 
-            return {
-                "open": _open,
-                "high": _high,
-                "low": _low,
-                "close": _close,
-                "volume": _volume,
-            }
+            frappe.db.commit()
+
         except Exception as e:
-            frappe.log_error(f"Error in merge_updates: {str(e)}", "Datafield Error")
+            frappe.db.rollback()
+            frappe.log_error(
+                f"Error in merge_updates transaction: {str(e)}", "Datafield Error"
+            )
             raise
+
+        return {
+            "open": _open,
+            "high": _high,
+            "low": _low,
+            "close": _close,
+            "volume": _volume,
+        }
+
+    except Exception as e:
+        frappe.log_error(f"Error in merge_updates: {str(e)}", "Datafield Error")
+        raise
 
 
 def extend_all_series() -> None:
@@ -284,3 +300,6 @@ def extend_all_series() -> None:
         frappe.db.rollback()
         frappe.log_error(f"Error in extend_all_series: {str(e)}", "Datafield Error")
         raise
+
+
+# EOF
