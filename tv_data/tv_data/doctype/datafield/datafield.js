@@ -17,8 +17,9 @@ frappe.ui.form.on("Datafield", {
     });
 
     frappe.realtime.on("datafield_update", function (data) {
+      console.log("Datafield Update", data);
       if (
-        (frappe.get_route_str() === `Form/${frappe.router.slug(data.doc_name)}`) or (data.doc_name === frm.doc.name)
+        frappe.get_route_str() === `Form/${frappe.router.slug(data.doc_name)}`
       ) {
         frappe.show_alert({
           message: data.message,
