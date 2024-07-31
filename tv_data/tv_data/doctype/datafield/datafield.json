@@ -16,8 +16,6 @@
   "key",
   "column_break_moka",
   "scale",
-  "data_series_section",
-  "daily_chart",
   "section_break_tpji",
   "created",
   "column_break_nosw",
@@ -34,6 +32,9 @@
   "section_break_ukfk",
   "datafield_update_table",
   "data_series_tab",
+  "data_series_section",
+  "chart_html",
+  "time_series_section",
   "datafield_series_table"
  ],
  "fields": [
@@ -152,12 +153,7 @@
   {
    "fieldname": "data_series_section",
    "fieldtype": "Section Break",
-   "label": "Data Series"
-  },
-  {
-   "fieldname": "daily_chart",
-   "fieldtype": "HTML",
-   "label": "Daily Chart"
+   "label": "Chart"
   },
   {
    "fieldname": "updates_tab",
@@ -200,6 +196,16 @@
    "fieldname": "datafield_update_table",
    "fieldtype": "Table",
    "options": "Datafield Update Table"
+  },
+  {
+   "fieldname": "time_series_section",
+   "fieldtype": "Section Break",
+   "label": "Time Series"
+  },
+  {
+   "fieldname": "chart_html",
+   "fieldtype": "HTML",
+   "label": "Timeframe 1D"
   }
  ],
  "links": [
@@ -216,7 +222,7 @@
    "link_fieldname": "datafield"
   }
  ],
- "modified": "2024-07-31 16:59:19.806660",
+ "modified": "2024-08-01 00:18:10.457952",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",
