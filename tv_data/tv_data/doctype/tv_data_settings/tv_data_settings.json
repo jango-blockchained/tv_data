@@ -5,6 +5,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "repository_tab",
   "section_break_fujp",
   "github_username",
   "github_token",
@@ -23,33 +24,16 @@
   "repo_url",
   "column_break_kvah",
   "fork_url",
-  "defaults_tab",
-  "defaults_section",
-  "default_user",
-  "default_field_name",
-  "default_data",
-  "data_tab",
   "update_section",
   "daily_commit_message",
   "column_break_bsda",
-  "pr_body"
+  "pr_body",
+  "data_tab",
+  "defaults_tab",
+  "defaults_section",
+  "tv_data_settings_defaults_table"
  ],
  "fields": [
-  {
-   "fieldname": "default_user",
-   "fieldtype": "Data",
-   "label": "Default User"
-  },
-  {
-   "fieldname": "default_field_name",
-   "fieldtype": "Data",
-   "label": "Default Field Name"
-  },
-  {
-   "fieldname": "default_data",
-   "fieldtype": "Float",
-   "label": "Default Data"
-  },
   {
    "default": "tradingview-pine-seeds",
    "fieldname": "repo_owner",
@@ -80,7 +64,7 @@
   {
    "fieldname": "section_break_ooba",
    "fieldtype": "Section Break",
-   "label": "Repository"
+   "label": "Origin"
   },
   {
    "fieldname": "column_break_xthf",
@@ -89,7 +73,7 @@
   {
    "fieldname": "section_break_fujp",
    "fieldtype": "Section Break",
-   "label": "Github"
+   "label": "Access"
   },
   {
    "fieldname": "defaults_tab",
@@ -143,7 +127,7 @@
   {
    "fieldname": "data_tab",
    "fieldtype": "Tab Break",
-   "label": "Data"
+   "label": "Worker"
   },
   {
    "fieldname": "update_section",
@@ -154,13 +138,15 @@
    "default": "Daily update of data and symbol info files",
    "fieldname": "daily_commit_message",
    "fieldtype": "Data",
-   "label": "Update Commit Message"
+   "label": "Update Commit Message",
+   "translatable": 1
   },
   {
    "default": "This is an automated pull request for the daily update of data and symbol info files.",
    "fieldname": "pr_body",
    "fieldtype": "Data",
-   "label": "Pull Request Body Message"
+   "label": "Pull Request Body Message",
+   "translatable": 1
   },
   {
    "fieldname": "column_break_bsda",
@@ -187,12 +173,23 @@
    "is_virtual": 1,
    "label": "Fork URL",
    "options": "URL"
+  },
+  {
+   "fieldname": "repository_tab",
+   "fieldtype": "Tab Break",
+   "label": "Repository"
+  },
+  {
+   "fieldname": "tv_data_settings_defaults_table",
+   "fieldtype": "Table",
+   "label": "TV Data Settings Defaults Table",
+   "options": "TV Data Settings Defaults Table"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-07-15 22:19:58.694461",
+ "modified": "2024-08-01 09:28:55.572779",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "TV Data Settings",

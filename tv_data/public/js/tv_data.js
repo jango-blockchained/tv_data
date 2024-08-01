@@ -1,4 +1,5 @@
 frappe.form.link_formatters["Datafield"] = function (value, doc) {
+  console.log("link_formatters", value, doc);
   let statusIcon = "";
   let statusColor = "";
 
@@ -23,7 +24,7 @@ frappe.form.link_formatters["Datafield"] = function (value, doc) {
 
   // Create the HTML for the status icon
   let iconHtml = `<i class="fa ${statusIcon}" style="color: ${statusColor}; margin-right: 5px;"></i>`;
-
+  console.log(iconHtml, value, "ÖÖÖ");
   // Combine the icon with the original value
-  return `${iconHtml}${value}`;
+  return `${iconHtml}${value} ÖÖÖ`;
 };
