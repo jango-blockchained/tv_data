@@ -11,6 +11,7 @@
   "owner_section",
   "user",
   "column_break_osup",
+  "status",
   "type",
   "section_break_nhzo",
   "key",
@@ -143,6 +144,7 @@
    "default": "OHLCV Series",
    "fieldname": "type",
    "fieldtype": "Select",
+   "hidden": 1,
    "in_filter": 1,
    "in_list_view": 1,
    "in_standard_filter": 1,
@@ -207,6 +209,13 @@
    "fieldtype": "HTML",
    "label": "Timeframe 1D",
    "options": "<div class=\"alert alert-warning\">No data available for the chart.</div>"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nCommitted\nRejected"
   }
  ],
  "links": [
@@ -223,7 +232,7 @@
    "link_fieldname": "datafield"
   }
  ],
- "modified": "2024-08-01 04:26:51.370289",
+ "modified": "2024-08-01 08:48:34.784620",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",
@@ -247,7 +256,20 @@
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
+ "states": [
+  {
+   "color": "Gray",
+   "title": "Pending"
+  },
+  {
+   "color": "Green",
+   "title": "Committed"
+  },
+  {
+   "color": "Red",
+   "title": "Rejected"
+  }
+ ],
  "timeline_field": "user",
  "track_changes": 1
 }

@@ -11,7 +11,7 @@ required_apps = []
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/tv_data/css/tv_data.css"
-# app_include_js = "/assets/tv_data/js/tv_data.js"
+app_include_js = "/assets/tv_data/js/tv_data.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/tv_data/css/tv_data.css"
