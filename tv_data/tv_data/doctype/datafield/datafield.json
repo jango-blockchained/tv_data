@@ -205,7 +205,8 @@
   {
    "fieldname": "chart_html",
    "fieldtype": "HTML",
-   "label": "Timeframe 1D"
+   "label": "Timeframe 1D",
+   "options": "<div class=\"alert alert-warning\">No data available for the chart.</div>"
   }
  ],
  "links": [
@@ -222,7 +223,7 @@
    "link_fieldname": "datafield"
   }
  ],
- "modified": "2024-08-01 00:18:10.457952",
+ "modified": "2024-08-01 04:26:51.370289",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",
