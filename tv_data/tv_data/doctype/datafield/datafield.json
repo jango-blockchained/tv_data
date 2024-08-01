@@ -19,6 +19,7 @@
   "scale",
   "section_break_tpji",
   "created",
+  "tradingview_workflow",
   "column_break_nosw",
   "last_modified",
   "updates_tab",
@@ -216,6 +217,11 @@
    "fieldtype": "Select",
    "label": "Status",
    "options": "Pending\nCommitted\nRejected"
+  },
+  {
+   "fieldname": "tradingview_workflow",
+   "fieldtype": "HTML",
+   "options": "1"
   }
  ],
  "links": [
@@ -232,7 +238,7 @@
    "link_fieldname": "datafield"
   }
  ],
- "modified": "2024-08-01 08:48:34.784620",
+ "modified": "2024-08-01 14:03:38.558526",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",
