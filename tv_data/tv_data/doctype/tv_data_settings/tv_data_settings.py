@@ -129,10 +129,14 @@ class TVDataSettings(Document):
     @frappe.whitelist()
     def get_cycle_timeline_html(self):
         cycles = self.get_cycles()
-        context = {"past_cycles": cycles["past"], "future_cycles": cycles["future"]}
+        context = {
+            "cycles": cycles["past"] + cycles["future"],
+            "past_cycles": cycles["past"],
+            "future_cycles": cycles["future"],
+        }
 
         return frappe.render_template(
-            "templates/includes/timeline_template_2.html", context
+            "templates/includes/timeline_template.html", context
         )
 
     @frappe.whitelist()

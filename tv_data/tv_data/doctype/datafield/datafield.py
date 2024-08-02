@@ -69,6 +69,7 @@ def generate_unique_name(key: str) -> str:
     Returns:
         str: The generated unique name in the format "DATA_{hash_code}_{key.upper()}".
     """
+    # cfg = frappe.get_single("TV Data Settings")
     while True:
         hash_code: str = frappe.generate_hash(length=8).upper()
         name = f"DATA_{hash_code}_{key.upper()}"

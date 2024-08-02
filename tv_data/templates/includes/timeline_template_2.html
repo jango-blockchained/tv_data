@@ -1,47 +1,182 @@
-{% extends "templates/includes/list_view.html" %}
+<div class="cycle-timeline">
+    <h2 class="timeline-title">TV Data Update Cycles</h2>
 
-{% block content %}
-<div class="container">
-    {% if past_cycles or future_cycles %}
-    <div class="timeline">
-        {% if past_cycles %}
-        <div class="timeline-item">
-            <div class="timeline-badge">
-                <i class="fa fa-history"></i>
-            </div>
-            <div class="timeline-content">
-                <h6>{{ _("Past Cycles") }}</h6>
-                {% for cycle in past_cycles %}
-                {{ frappe.render_template("templates/includes/cycle_item_2.html",
-                {"cycle": cycle, "is_past": True}) }}
+    {% if cycles.past or cycles.future %}
+    <div class="timeline-container">
+        <div class="timeline-section past-cycles">
+            <h3>Past Cycles</h3>
+            <ul>
+                {% for cycle in cycles.past %}
+                <li class="cycle-item past">
+                    <div class="cycle-content">
+                        <span class="cycle-index">Cycle {{ cycle.index }}</span>
+                        <span class="cycle-time">{{ cycle.time }}</span>
+                        <span class="cycle-status">Completed</span>
+                    </div>
+                </li>
                 {% endfor %}
+            </ul>
+        </div>
+
+        <div class="timeline-divider">
+            <div class="current-time">
+                Current Time<br>
+                <span id="current-time-display"></span>
             </div>
         </div>
-        {% endif %}
 
-        {% if future_cycles %}
-        <div class="timeline-item">
-            <div class="timeline-badge">
-                <i class="fa fa-calendar"></i>
-            </div>
-            <div class="timeline-content">
-                <h6>{{ _("Upcoming Cycles") }}</h6>
-                {% for cycle in future_cycles %}
-                {{ frappe.render_template("templates/includes/cycle_item_2.html",
-                {"cycle": cycle, "is_past": False}) }}
+        <div class="timeline-section future-cycles">
+            <h3>Upcoming Cycles</h3>
+            <ul>
+                {% for cycle in cycles.future %}
+                <li class="cycle-item future">
+                    <div class="cycle-content">
+                        <span class="cycle-index">Cycle {{ cycle.index }}</span>
+                        <span class="cycle-time">{{ cycle.time }}</span>
+                        <span class="cycle-status">Scheduled</span>
+                    </div>
+                </li>
                 {% endfor %}
-            </div>
+            </ul>
         </div>
-        {% endif %}
-    </div>
-
-    <div class="text-muted text-center small mt-4">
-        {{ _("Current Time:") }} <span id="current-time-display"></span>
     </div>
     {% else %}
-    <div class="text-muted text-center">
-        <i class="fa fa-ban"></i> {{ _("No cycles available at the moment.") }}
-    </div>
+    <p class="no-cycles">No cycles available at the moment.</p>
     {% endif %}
 </div>
-{% endblock %}
+
+<style>
+    .cycle-timeline {
+        font-family: 'Arial', sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .timeline-title {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .timeline-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .timeline-section {
+        flex: 1;
+        padding: 0 20px;
+    }
+
+    .timeline-section h3 {
+        color: #444;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 10px;
+    }
+
+    .timeline-divider {
+        width: 2px;
+        background-color: #ddd;
+        position: relative;
+    }
+
+    .current-time {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        font-weight: bold;
+        color: #333;
+    }
+
+    #current-time-display {
+        font-size: 0.9em;
+        color: #666;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .cycle-item {
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .cycle-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .past {
+        background-color: #e8f4ff;
+        border-left: 5px solid #4a90e2;
+    }
+
+    .future {
+        background-color: #fff0e8;
+        border-left: 5px solid #f5a623;
+    }
+
+    .cycle-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .cycle-index {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .cycle-time {
+        font-family: monospace;
+        color: #666;
+    }
+
+    .cycle-status {
+        font-size: 0.8em;
+        padding: 3px 8px;
+        border-radius: 3px;
+        text-transform: uppercase;
+    }
+
+    .past .cycle-status {
+        background-color: #4a90e2;
+        color: white;
+    }
+
+    .future .cycle-status {
+        background-color: #f5a623;
+        color: white;
+    }
+
+    .no-cycles {
+        text-align: center;
+        color: #666;
+        font-style: italic;
+    }
+</style>
+
+<script>
+    function updateCurrentTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', { hour12: false });
+        document.getElementById('current-time-display').textContent = timeString;
+    }
+
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 1000);
+</script>

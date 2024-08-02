@@ -44,6 +44,8 @@
   "section_break_voiz",
   "html_jshh",
   "defaults_tab",
+  "section_break_acsm",
+  "field_name_hash_length",
   "defaults_section",
   "tv_data_settings_defaults_table"
  ],
@@ -280,12 +282,24 @@
    "fieldtype": "Data",
    "label": "Github Email",
    "options": "Email"
+  },
+  {
+   "fieldname": "section_break_acsm",
+   "fieldtype": "Section Break",
+   "label": "Datafield"
+  },
+  {
+   "default": "8",
+   "fieldname": "field_name_hash_length",
+   "fieldtype": "Int",
+   "label": "Field Name Hash Length",
+   "non_negative": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-08-03 00:34:25.643048",
+ "modified": "2024-08-03 01:37:05.010985",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "TV Data Settings",

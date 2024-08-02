@@ -112,29 +112,3 @@
         transform: translateY(0);
     }
 </style>
-
-<script>
-    frappe.ready(function () {
-        function updateCurrentTime() {
-            var now = new Date();
-            var timeString = now.toLocaleTimeString(frappe.boot.lang, { hour12: false });
-            $('#current-time-display').text(timeString);
-        }
-
-        updateCurrentTime();
-        setInterval(updateCurrentTime, 1000);
-
-        // Animate timeline items on load
-        setTimeout(function () {
-            $('.tl-item').each(function (index) {
-                var $item = $(this);
-                setTimeout(function () {
-                    $item.find('.tl-content').css({
-                        'opacity': 1,
-                        'transform': 'translateY(0)'
-                    });
-                }, index * 100);
-            });
-        }, 500);
-    });
-</script>

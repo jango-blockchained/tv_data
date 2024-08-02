@@ -23,7 +23,12 @@ function timeline_h() {
   });
 }
 
-function setCurrentTime() {
+timeline_h();
+timeline_w();
+
+// Animate timeline items on load
+
+function updateCurrentTime() {
   var now = new Date();
   var timeString = now.toLocaleTimeString(frappe.boot.lang, {
     hour12: false,
@@ -31,6 +36,18 @@ function setCurrentTime() {
   $("#current-time-display").text(timeString);
 }
 
-setCurrentTime();
-timeline_h();
-timeline_w();
+updateCurrentTime();
+setInterval(updateCurrentTime, 1000);
+
+// Animate timeline items on load
+setTimeout(function () {
+  $(".timeline-item").each(function (index) {
+    var $item = $(this);
+    setTimeout(function () {
+      $item.find(".timeline-content").css({
+        opacity: 1,
+        transform: "translateY(0)",
+      });
+    }, index * 100);
+  });
+}, 500);
