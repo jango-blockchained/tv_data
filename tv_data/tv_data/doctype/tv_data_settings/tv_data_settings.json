@@ -29,6 +29,16 @@
   "column_break_bsda",
   "pr_body",
   "data_tab",
+  "series_section",
+  "timeframe",
+  "daily_updates",
+  "cycle_begin",
+  "scheduler_pre_runtime",
+  "column_break_tfiq",
+  "cycle_duration",
+  "last_cycle",
+  "next_cycle",
+  "runtime_cycle",
   "defaults_tab",
   "defaults_section",
   "tv_data_settings_defaults_table"
@@ -92,6 +102,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "collapsible": 1,
    "fieldname": "section_break_jyew",
    "fieldtype": "Section Break",
    "label": "URL"
@@ -130,6 +141,7 @@
    "label": "Worker"
   },
   {
+   "collapsible": 1,
    "fieldname": "update_section",
    "fieldtype": "Section Break",
    "label": "On Update / Pull Request"
@@ -184,12 +196,67 @@
    "fieldtype": "Table",
    "label": "TV Data Settings Defaults Table",
    "options": "TV Data Settings Defaults Table"
+  },
+  {
+   "fieldname": "series_section",
+   "fieldtype": "Section Break",
+   "label": "Series"
+  },
+  {
+   "fieldname": "timeframe",
+   "fieldtype": "Duration",
+   "label": "Timeframe",
+   "options": "Timeframe"
+  },
+  {
+   "default": "5",
+   "description": "<code>24h/ Daily Updates</code> ",
+   "fieldname": "daily_updates",
+   "fieldtype": "Int",
+   "label": "Daily Updates"
+  },
+  {
+   "fieldname": "cycle_begin",
+   "fieldtype": "Time",
+   "label": "Cycle Begin"
+  },
+  {
+   "fieldname": "scheduler_pre_runtime",
+   "fieldtype": "Duration",
+   "label": "Scheduler Pre Runtime"
+  },
+  {
+   "fieldname": "column_break_tfiq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cycle_duration",
+   "fieldtype": "Duration",
+   "is_virtual": 1,
+   "label": "Cycle Duration"
+  },
+  {
+   "fieldname": "last_cycle",
+   "fieldtype": "Datetime",
+   "is_virtual": 1,
+   "label": "Last Cycle"
+  },
+  {
+   "fieldname": "next_cycle",
+   "fieldtype": "Datetime",
+   "is_virtual": 1,
+   "label": "Next Cycle"
+  },
+  {
+   "fieldname": "runtime_cycle",
+   "fieldtype": "Duration",
+   "label": "Runtime Cycle"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-08-01 09:28:55.572779",
+ "modified": "2024-08-01 15:31:57.673074",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "TV Data Settings",
