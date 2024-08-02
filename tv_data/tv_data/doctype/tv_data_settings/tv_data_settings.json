@@ -29,6 +29,8 @@
   "column_break_bsda",
   "pr_body",
   "data_tab",
+  "cycle_section",
+  "html_ntzq",
   "series_section",
   "timeframe",
   "daily_updates",
@@ -39,6 +41,8 @@
   "last_cycle",
   "next_cycle",
   "runtime_cycle",
+  "section_break_voiz",
+  "html_jshh",
   "defaults_tab",
   "defaults_section",
   "tv_data_settings_defaults_table"
@@ -199,8 +203,7 @@
   },
   {
    "fieldname": "series_section",
-   "fieldtype": "Section Break",
-   "label": "Series"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "timeframe",
@@ -251,12 +254,32 @@
    "fieldname": "runtime_cycle",
    "fieldtype": "Duration",
    "label": "Runtime Cycle"
+  },
+  {
+   "fieldname": "cycle_section",
+   "fieldtype": "Section Break",
+   "hide_border": 1,
+   "label": "Cycle"
+  },
+  {
+   "fieldname": "html_jshh",
+   "fieldtype": "HTML",
+   "options": "<div id=\"cycle-timeline-container\"></div>"
+  },
+  {
+   "fieldname": "html_ntzq",
+   "fieldtype": "HTML",
+   "options": "<div id=\"horizontal-timeline-container\"></div>"
+  },
+  {
+   "fieldname": "section_break_voiz",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-08-01 15:31:57.673074",
+ "modified": "2024-08-02 21:57:46.458809",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "TV Data Settings",

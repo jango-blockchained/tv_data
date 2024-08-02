@@ -340,4 +340,114 @@ def get_list():
     return frappe.get_list("Datafield", fields=["name", "key", "value", "user", "type"])
 
 
+# STATICS
+# -------
+
+
+@staticmethod
+def generate_files():
+    settings = frappe.get_single("TV Data Settings")
+    base_dir = "tv_data"
+    data_dir = os.path.join(base_dir, "data")
+    symbol_info_dir = os.path.join(base_dir, "symbol_info")
+    github_dir = os.path.join(base_dir, ".github")
+
+    os.makedirs(data_dir, exist_ok=True)
+    os.makedirs(symbol_info_dir, exist_ok=True)
+    os.makedirs(github_dir, exist_ok=True)
+
+    storage_data = []
+
+    datafields = frappe.get_all("Datafield", fields=["name", "user", "key", "value"])
+
+    for datafield in datafields:
+
+        csv_file_path = os.path.join(data_dir, f"{datafield['name']}.csv")
+
+        with open(csv_file_path, mode="w", newline="") as csv_file:
+            csv_writer = csv.writer(csv_file)
+            # csv_writer.writerow(['timestamp', 'value'])
+            csv_writer.writerow([frappe.utils.now(), datafield["value"]])
+
+        json_file_path = os.path.join(
+            symbol_info_dir, f"seed_{datafield['name']}_{datafield['key']}.json"
+        )
+
+        with open(json_file_path, "w") as json_file:
+            json.dump(
+                {
+                    "symbol": datafield["name"],
+                    "description": datafield["key"],
+                    "value": datafield["value"],
+                },
+                json_file,
+                indent=4,
+            )
+
+        storage_data.append(
+            {
+                "symbol": datafield["name"],
+                "description": datafield["key"],
+                "path": csv_file_path,
+            }
+        )
+
+    storage_file_path = os.path.join(base_dir, f"{settings.fork_name}.json")
+    with open(storage_file_path, "w") as json_file:
+        json.dump(storage_data, json_file, indent=4)
+
+    return f"Files generated successfully in {base_dir}"
+
+
+@staticmethod
+def update_repository():
+    settings = frappe.get_single("TV Data Settings")
+    repo_dir = "tv_data_repo"
+    remote_url = (
+        f"https://github.com/{settings.fork_owner}/{settings.fork_repo_name}.git"
+    )
+
+    if not os.path.exists(repo_dir):
+        subprocess.run(["git", "clone", remote_url, repo_dir])
+
+    os.chdir(repo_dir)
+    subprocess.run(["git", "pull"])
+    base_dir = "../tv_data"
+    subprocess.run(["cp", "-r", f"{base_dir}/.", "."])
+    subprocess.run(["git", "add", "."])
+    subprocess.run(["git", "commit", "-m", settings.daily_commit_message])
+    subprocess.run(["git", "push"])
+    os.chdir("..")
+
+    return "Repository updated successfully"
+
+
+@staticmethod
+def create_pull_request():
+    settings = frappe.get_single("TV Data Settings")
+    token = get_decrypted_password(  # type: ignore
+        "TV Data Settings", "TV Data Settings", "github_token", False
+    )
+    url = f"{settings.repo_url}/{settings.repo_owner}/{settings.repo_name}/pulls"
+
+    data = {
+        "title": settings.daily_commit_message,
+        "head": f"{settings.fork_owner}:{settings.fork_branch}",
+        "base": "main",
+        "body": settings.pr_body,
+    }
+
+    headers = {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github.v3+json",
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+
+    if response.status_code == 201:
+        return "Pull request created successfully"
+    else:
+        return f"Failed to create pull request: {response.json()}"
+
+
 # EOF

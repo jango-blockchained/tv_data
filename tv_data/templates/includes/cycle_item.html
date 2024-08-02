@@ -1,0 +1,26 @@
+<div class="frappe-card mb-3">
+    <div class="frappe-card-body p-3">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <i class="fa fa-{% if is_past %}check text-success{% else %}clock-o text-warning{% endif %}"></i>
+            </div>
+            <div class="col">
+                <div class="row no-gutters justify-content-between">
+                    <div class="col-auto">
+                        <strong>{{ _("Cycle") }} {{ cycle.index }}</strong>
+                    </div>
+                    <div class="col-auto">
+                        <span class="text-muted">{{ cycle.time }}</span>
+                    </div>
+                </div>
+                <div class="text-muted small">
+                    {% if is_past %}
+                    {{ _("Completed") }}
+                    {% else %}
+                    {{ _("Scheduled") }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

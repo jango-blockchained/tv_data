@@ -37,7 +37,8 @@
   "data_series_section",
   "chart_html",
   "time_series_section",
-  "datafield_series_table"
+  "datafield_series_table",
+  "html_vmwe"
  ],
  "fields": [
   {
@@ -222,6 +223,11 @@
    "fieldname": "tradingview_workflow",
    "fieldtype": "HTML",
    "options": "1"
+  },
+  {
+   "fieldname": "html_vmwe",
+   "fieldtype": "HTML",
+   "options": "&lt;template&gt;\n  <button> Reload </button>\n  <pre>{{ post }}</pre>\n&lt;/template&gt;\n\n&lt;script setup&gt;\nimport { createResource } from 'frappe-ui'\nlet post = createResource({\n  url: 'https://jsonplaceholder.typicode.com/posts/1',\n  method: 'GET',\n})\npost.fetch()\n&lt;/script&gt;"
   }
  ],
  "links": [
@@ -238,7 +244,7 @@
    "link_fieldname": "datafield"
   }
  ],
- "modified": "2024-08-01 14:03:38.558526",
+ "modified": "2024-08-02 06:52:22.130933",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield",

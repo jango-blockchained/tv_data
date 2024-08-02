@@ -1,0 +1,140 @@
+<div class="tv-data-horizontal-timeline">
+    <div class="horizontal-timeline-container">
+        <div class="tl-header">
+            <h6 class="tl-title">{{ _("Github PR Requests Update Cycles") }}</h6>
+        </div>
+        <div class="tl-wrapper">
+            <div class="tl-track">
+                {% for cycle in cycles %}
+                <div class="tl-item {% if loop.index0 < current_cycle_index %}past{% elif loop.index0 == current_cycle_index %}current{% else %}future{% endif %}"
+                    data-index="{{ loop.index }}" data-time="{{ cycle.time }}">
+                    <div class="tl-dot"></div>
+                    <div class="tl-content">
+                        <span class="tl-index">{{ _("Cycle") }} {{ cycle.index }}</span>
+                        <span class="tl-time">{{ cycle.time }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="tl-footer">
+            <span class="text-muted">{{ _("Current Time:") }} <span
+                    id="current-time-display">{{current_time_display}}</span></span>
+        </div>
+    </div>
+</div>
+
+<style>
+    .tv-data-horizontal-timeline {
+        font-size: var(--text-sm);
+        --timeline-dot-size: 24px;
+        --timeline-line-height: 1px;
+    }
+
+    .tl-container {
+        padding: 20px 0;
+    }
+
+    .tl-header,
+    .tl-footer {
+        text-align: center;
+        margin: 10px 0;
+    }
+
+    .tl-wrapper {
+        overflow-x: auto;
+        padding: 20px 0;
+    }
+
+    .tl-track {
+        display: flex;
+        position: relative;
+        min-width: 100%;
+    }
+
+    .tl-track::before {
+        content: '';
+        position: absolute;
+        top: calc(var(--timeline-dot-size) / 2);
+        left: 0;
+        right: 0;
+        height: var(--timeline-line-height);
+        background-color: var(--gray-300);
+    }
+
+    .tl-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        min-width: 100px;
+    }
+
+    .tl-dot {
+        width: var(--timeline-dot-size);
+        height: var(--timeline-dot-size);
+        border-radius: 50%;
+        background-color: var(--gray-500);
+        z-index: 1;
+        transition: all 0.3s ease;
+    }
+
+    .tl-content {
+        text-align: center;
+        margin-top: 10px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+    }
+
+    .tl-index,
+    .tl-time {
+        display: block;
+    }
+
+    .tl-item.past .tl-dot {
+        background-color: var(--blue-500);
+    }
+
+    .tl-item.current .tl-dot {
+        background-color: var(--yellow-500);
+        box-shadow: 0 0 0 4px var(--yellow-200);
+    }
+
+    .tl-item.future .tl-dot {
+        background-color: var(--gray-400);
+    }
+
+    .tl-item:hover .tl-content,
+    .tl-item.current .tl-content {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+
+<script>
+    frappe.ready(function () {
+        function updateCurrentTime() {
+            var now = new Date();
+            var timeString = now.toLocaleTimeString(frappe.boot.lang, {hour12: false});
+            $('#current-time-display').text(timeString);
+        }
+
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
+
+        // Animate timeline items on load
+        setTimeout(function () {
+            $('.tl-item').each(function (index) {
+                var $item = $(this);
+                setTimeout(function () {
+                    $item.find('.tl-content').css({
+                        'opacity': 1,
+                        'transform': 'translateY(0)'
+                    });
+                }, index * 100);
+            });
+        }, 500);
+    });
+</script>

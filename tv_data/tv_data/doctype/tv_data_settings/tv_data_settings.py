@@ -3,68 +3,35 @@ from frappe.model.document import Document
 from frappe.utils import cint, flt
 from typing import List, Union, Optional, Any
 from datetime import datetime, timedelta
-import time
+from functools import lru_cache
 
 
 class TVDataSettingsDefaults:
     def __init__(self, defaults_table: List[Document]) -> None:
-        """
-        Initialize the TVDataSettingsDefaults object.
-
-        Args:
-            defaults_table (List[Document]): A list of documents representing the defaults table.
-
-        Returns:
-            None
-        """
         for default in defaults_table:
-            value = self._convert_value(default.def_value, default.def_type)
-            setattr(self, default.def_name, value)
+            setattr(
+                self,
+                default.def_name,
+                self._convert_value(default.def_value, default.def_type),
+            )
 
-    def _convert_value(self, value: str, value_type: str) -> Union[float, int, str]:
-        """
-        Convert the given value to the specified value type.
-
-        Args:
-            value (str): The value to be converted.
-            value_type (str): The type to which the value should be converted.
-                Possible values are "Float", "Int", "Check", or "Data".
-
-        Returns:
-            Union[float, int, str]: The converted value.
-        """
-        if value_type == "Float":
-            return flt(value)
-        elif value_type == "Int":
-            return cint(value)
-        elif value_type == "Check":
-            return cint(value) == 1
-        else:  # "Data" or any other type
-            return value
+    @staticmethod
+    def _convert_value(value: str, value_type: str) -> Union[float, int, str, bool]:
+        converters = {
+            "Float": flt,
+            "Int": cint,
+            "Check": lambda v: cint(v) == 1,
+        }
+        return converters.get(value_type, lambda x: x)(value)
 
     def __getattr__(self, name):
         return None
 
 
 class TVDataSettings(Document):
-
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """
-        Initialize the TVDataSettings object.
-
-        Args:
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns:
-            None
-        """
         super().__init__(*args, **kwargs)
         self._defaults: Optional[TVDataSettingsDefaults] = None
-        # self.timeframe: str = '1d'
-        # self.daily_updates: int = 5
-        # self.cycle_begin: str = '00:00:00'
-        # self.scheduler_pre_runtime: timedelta = timedelta(minutes=5)
 
     @property
     def defaults(self):
@@ -75,100 +42,138 @@ class TVDataSettings(Document):
         return self._defaults
 
     @staticmethod
+    @lru_cache(maxsize=None)
     def timeframe_to_timedelta(timeframe: str) -> timedelta:
-        """
-        Convert the given timeframe string into a timedelta object.
-
-        Args:
-            timeframe (str): The timeframe string to be converted.
-                Possible values are in the format of '{int}{unit}', where
-                {int} is the number of time units and {unit} is one of
-                'd', 'h', 'm', 's'.
-
-        Returns:
-            timedelta: The timedelta object representing the given timeframe.
-        """
-        time_units = {
-            "d": timedelta(days=1),
-            "h": timedelta(hours=1),
-            "m": timedelta(minutes=1),
-            "s": timedelta(seconds=1),
-        }
+        time_units = {"d": 24 * 60 * 60, "h": 60 * 60, "m": 60, "s": 1}
         try:
-            num, unit = timeframe[:-1], timeframe[-1]
-            return time_units[unit] * int(num)
+            num, unit = int(timeframe[:-1]), timeframe[-1]
+            return timedelta(seconds=time_units[unit] * num)
         except (KeyError, ValueError):
             raise ValueError(f"Invalid timeframe: {timeframe}")
 
     @property
     def fork_name(self):
-        if self.fork_owner and self.fork_data_type_name:
-            return f"seed_{self.fork_owner.lower()}_{self.fork_data_type_name.lower()}"
-        return None
+        return (
+            f"seed_{self.fork_owner.lower()}_{self.fork_data_type_name.lower()}"
+            if self.fork_owner and self.fork_data_type_name
+            else None
+        )
 
     @property
     def repo_url(self):
-        if self.repo_owner and self.repo_name:
-            return f"{self.github_url}/{self.repo_owner}/{self.repo_name}.git"
-        return None
+        return (
+            f"{self.github_url}/{self.repo_owner}/{self.repo_name}.git"
+            if self.repo_owner and self.repo_name
+            else None
+        )
 
     @property
     def fork_url(self):
-        if self.repo_owner and self.repo_name and self.fork_name:
-            return f"{self.github_url}/{self.fork_owner}/{self.fork_name}.git"
-        return None
+        return (
+            f"{self.github_url}/{self.fork_owner}/{self.fork_name}.git"
+            if self.repo_owner and self.repo_name and self.fork_name
+            else None
+        )
 
     @property
+    @lru_cache(maxsize=1)
     def cycle_duration(self) -> timedelta:
-        """Returns the duration of each cycle."""
-        return timedelta(hours=24 / self.daily_updates)  # Duration of each cycle
+        return timedelta(hours=(24 / self.daily_updates))
 
     @property
-    def cycle_begin_time(self) -> datetime:
-        """Returns the cycle begin time as a time object."""
+    @lru_cache(maxsize=1)
+    def cycle_begin_time(self) -> datetime.time:
         return datetime.strptime(self.cycle_begin, "%H:%M:%S").time()
 
     @property
     def next_cycle(self) -> datetime:
-        """Calculates the datetime for the next cycle."""
         now = datetime.now()
         cycle_begin_datetime = datetime.combine(now.date(), self.cycle_begin_time)
-
-        # Calculate next cycle time from cycle begin, interval, and pre-runtime (sec)
-        while cycle_begin_datetime < now:
+        while cycle_begin_datetime <= now:
             cycle_begin_datetime += self.cycle_duration
-
-        return cycle_begin_datetime - self.timeframe_to_timedelta(
-            self.scheduler_pre_runtime
-        )
+        return cycle_begin_datetime - timedelta(seconds=int(self.scheduler_pre_runtime))
 
     @property
     def last_cycle(self) -> datetime:
-        """Calculates the datetime for the last cycle."""
         now = datetime.now()
         cycle_begin_datetime = datetime.combine(now.date(), self.cycle_begin_time)
-
-        # Calculate last cycle time from cycle begin and interval
-        while cycle_begin_datetime < now:
+        last_cycle_time = None
+        while cycle_begin_datetime <= now:
             last_cycle_time = cycle_begin_datetime
             cycle_begin_datetime += self.cycle_duration
-
-        return cycle_begin_datetime - self.scheduler_pre_runtime
-
-    # Example usage
-    # scheduler = Scheduler()
-    # print("Cycle Interval:", scheduler.cycle_duration)
-    # print("Next Cycle:", scheduler.next_cycle)
-    # print("Last Cycle:", scheduler.last_cycle)
+        if last_cycle_time is None:
+            raise ValueError("last_cycle_time is not set")
+        return last_cycle_time - timedelta(seconds=int(self.scheduler_pre_runtime))
 
     def validate(self):
-        if self.fork_data_type_name:
-            self.fork_data_type_name = self.fork_data_type_name.strip()
-        if self.repo_owner:
-            self.repo_owner = self.repo_owner.strip()
-        if self.repo_name:
-            self.repo_name = self.repo_name.strip()
-        if self.fork_owner:
-            self.fork_owner = self.fork_owner.strip()
-        if self.fork_data_type_name:
-            self.fork_data_type_name = self.fork_data_type_name.strip()
+        for attr in ["fork_data_type_name", "repo_owner", "repo_name", "fork_owner"]:
+            if getattr(self, attr):
+                setattr(self, attr, getattr(self, attr).strip())
+
+    def convert_decimal_to_duration(self, decimal_hours):
+        hours = int(decimal_hours)
+        minutes = int((decimal_hours - hours) * 60)
+        seconds = int(((decimal_hours - hours) * 60 - minutes) * 60)
+        return f"{hours:02}:{minutes:02}:{seconds:02}"
+
+    def get_cycles(self):
+        now = datetime.now()
+        cycle_begin_datetime = datetime.combine(now.date(), self.cycle_begin_time)
+        current_time = now.time()
+
+        past_cycles = []
+        future_cycles = []
+
+        for i in range(self.daily_updates):
+            cycle_time = (cycle_begin_datetime + i * self.cycle_duration).time()
+
+            cycle_info = {
+                "index": i + 1,
+                "time": cycle_time.strftime("%H:%M:%S"),
+            }
+
+            if cycle_time < current_time:
+                past_cycles.append(cycle_info)
+            elif cycle_time > current_time:
+                future_cycles.append(cycle_info)
+            # If cycle_time == current_time, we skip it as it's neither past nor future
+
+        return {"past": past_cycles, "future": future_cycles}
+
+    @frappe.whitelist()
+    def get_cycle_timeline_html(self):
+        cycles = self.get_cycles()
+        context = {"past_cycles": cycles["past"], "future_cycles": cycles["future"]}
+
+        return frappe.render_template(
+            "templates/includes/timeline_template.html", context
+        )
+
+    @frappe.whitelist()
+    def get_horizontal_timeline_html(self):
+        cycles = self.get_cycles()
+        current_time_display = datetime.now().time().strftime("%H:%M:%S")
+        context = {
+            "cycles": cycles["past"] + cycles["future"],
+            "current_cycle_index": len(cycles["past"]),
+            "current_time_display": current_time_display,
+        }
+
+        return frappe.render_template(
+            "templates/includes/timeline_horizontal_template.html", context
+        )
+
+
+def dev_log(message: str) -> None:
+    if frappe.flags.in_test:
+        print(message)
+
+
+@frappe.whitelist()
+def _get_cycle_timeline_html():
+    return frappe.get_doc("TV Data Settings").get_cycle_timeline_html()
+
+
+@frappe.whitelist()
+def _get_horizontal_timeline_html():
+    return frappe.get_doc("TV Data Settings").get_horizontal_timeline_html()
