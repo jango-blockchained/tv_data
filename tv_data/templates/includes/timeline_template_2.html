@@ -1,0 +1,47 @@
+{% extends "templates/includes/list_view.html" %}
+
+{% block content %}
+<div class="container">
+    {% if past_cycles or future_cycles %}
+    <div class="timeline">
+        {% if past_cycles %}
+        <div class="timeline-item">
+            <div class="timeline-badge">
+                <i class="fa fa-history"></i>
+            </div>
+            <div class="timeline-content">
+                <h6>{{ _("Past Cycles") }}</h6>
+                {% for cycle in past_cycles %}
+                {{ frappe.render_template("templates/includes/cycle_item_2.html",
+                {"cycle": cycle, "is_past": True}) }}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if future_cycles %}
+        <div class="timeline-item">
+            <div class="timeline-badge">
+                <i class="fa fa-calendar"></i>
+            </div>
+            <div class="timeline-content">
+                <h6>{{ _("Upcoming Cycles") }}</h6>
+                {% for cycle in future_cycles %}
+                {{ frappe.render_template("templates/includes/cycle_item_2.html",
+                {"cycle": cycle, "is_past": False}) }}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="text-muted text-center small mt-4">
+        {{ _("Current Time:") }} <span id="current-time-display"></span>
+    </div>
+    {% else %}
+    <div class="text-muted text-center">
+        <i class="fa fa-ban"></i> {{ _("No cycles available at the moment.") }}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,6 +1,5 @@
 {
  "actions": [],
- "allow_rename": 1,
  "creation": "2024-07-12 20:29:01.772234",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -9,6 +8,7 @@
   "section_break_fujp",
   "github_username",
   "github_token",
+  "github_email",
   "column_break_izda",
   "github_url",
   "github_api_url",
@@ -274,12 +274,18 @@
   {
    "fieldname": "section_break_voiz",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "github_email",
+   "fieldtype": "Data",
+   "label": "Github Email",
+   "options": "Email"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-08-02 21:57:46.458809",
+ "modified": "2024-08-03 00:34:25.643048",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "TV Data Settings",

@@ -4,6 +4,7 @@ from frappe.utils import cint, flt
 from typing import List, Union, Optional, Any
 from datetime import datetime, timedelta
 from functools import lru_cache
+from tv_data.cycle import CycleManager
 
 
 class TVDataSettingsDefaults:
@@ -117,28 +118,13 @@ class TVDataSettings(Document):
         return f"{hours:02}:{minutes:02}:{seconds:02}"
 
     def get_cycles(self):
-        now = datetime.now()
-        cycle_begin_datetime = datetime.combine(now.date(), self.cycle_begin_time)
-        current_time = now.time()
-
-        past_cycles = []
-        future_cycles = []
-
-        for i in range(self.daily_updates):
-            cycle_time = (cycle_begin_datetime + i * self.cycle_duration).time()
-
-            cycle_info = {
-                "index": i + 1,
-                "time": cycle_time.strftime("%H:%M:%S"),
-            }
-
-            if cycle_time < current_time:
-                past_cycles.append(cycle_info)
-            elif cycle_time > current_time:
-                future_cycles.append(cycle_info)
-            # If cycle_time == current_time, we skip it as it's neither past nor future
-
-        return {"past": past_cycles, "future": future_cycles}
+        # Use CycleManager to get cycle data
+        cycle_manager = CycleManager(
+            cycle_begin_time=self.cycle_begin_time,
+            daily_updates=self.daily_updates,
+            cycle_duration=self.cycle_duration,
+        )
+        return cycle_manager.get_cycles()
 
     @frappe.whitelist()
     def get_cycle_timeline_html(self):
@@ -146,7 +132,7 @@ class TVDataSettings(Document):
         context = {"past_cycles": cycles["past"], "future_cycles": cycles["future"]}
 
         return frappe.render_template(
-            "templates/includes/timeline_template.html", context
+            "templates/includes/timeline_template_2.html", context
         )
 
     @frappe.whitelist()

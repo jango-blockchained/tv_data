@@ -74,10 +74,10 @@
     .tl-dot {
         width: var(--timeline-dot-size);
         height: var(--timeline-dot-size);
-        border-radius: 50%;
+        border-radius: 10%;
         background-color: var(--gray-500);
         z-index: 1;
-        transition: all 0.3s ease;
+        transition: all 3s ease;
     }
 
     .tl-content {
@@ -117,7 +117,7 @@
     frappe.ready(function () {
         function updateCurrentTime() {
             var now = new Date();
-            var timeString = now.toLocaleTimeString(frappe.boot.lang, {hour12: false});
+            var timeString = now.toLocaleTimeString(frappe.boot.lang, { hour12: false });
             $('#current-time-display').text(timeString);
         }
 

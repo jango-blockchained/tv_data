@@ -401,6 +401,9 @@ def generate_files():
 
 @staticmethod
 def update_repository():
+    import os
+    import subprocess
+
     settings = frappe.get_single("TV Data Settings")
     repo_dir = "tv_data_repo"
     remote_url = (
