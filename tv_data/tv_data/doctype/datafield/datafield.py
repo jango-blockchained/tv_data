@@ -4,6 +4,9 @@ import datetime
 from typing import Dict, Optional, Union
 
 
+from frappe import _
+
+
 def get_doc_from_user_key(
     user: str,
     df: object = None,
@@ -74,6 +77,7 @@ def generate_unique_name(key: str) -> str:
 
 
 class Datafield(Document):
+
     @property
     def created(self) -> str:
         """Return the creation date of the document."""
@@ -314,7 +318,7 @@ def extend_series(doc_name: str) -> None:
     frappe.db.begin()
     try:
         doc = frappe.get_doc("Datafield", doc_name)
-        amount_updates = doc.extend_doc_series()
+        doc.extend_doc_series()
         doc.save(ignore_permissions=True)
         frappe.db.commit()
     except Exception as e:
@@ -326,6 +330,14 @@ def extend_series(doc_name: str) -> None:
             doc_name,
         )
         raise
+
+
+@frappe.whitelist(allow_guest=True)
+def get_list():
+    if not frappe.has_permission("Datafield", "read"):
+        frappe.throw(_("No permission for Datafield"), frappe.PermissionError)
+
+    return frappe.get_list("Datafield", fields=["name", "key", "value", "user", "type"])
 
 
 # EOF

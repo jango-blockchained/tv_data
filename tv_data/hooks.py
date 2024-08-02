@@ -107,7 +107,7 @@ app_include_js = "/assets/tv_data/js/tv_data.js"
 # }
 #
 # has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
+#     "Datafield": "tv_data.tv_data.doctype.datafield.datafield.has_permission",
 # }
 
 # DocType Class
