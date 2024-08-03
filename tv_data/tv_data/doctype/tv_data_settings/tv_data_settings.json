@@ -215,7 +215,7 @@
   },
   {
    "default": "5",
-   "description": "<code>24h/ Daily Updates</code> ",
+   "description": "<code>24h / Daily Updates</code> ",
    "fieldname": "daily_updates",
    "fieldtype": "Int",
    "label": "Daily Updates"
@@ -260,7 +260,6 @@
   {
    "fieldname": "cycle_section",
    "fieldtype": "Section Break",
-   "hide_border": 1,
    "label": "Cycle"
   },
   {
@@ -299,7 +298,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-08-03 01:37:05.010985",
+ "modified": "2024-08-03 03:42:48.468542",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "TV Data Settings",

@@ -69,9 +69,9 @@ def generate_unique_name(key: str) -> str:
     Returns:
         str: The generated unique name in the format "DATA_{hash_code}_{key.upper()}".
     """
-    # cfg = frappe.get_single("TV Data Settings")
+    cfg = frappe.get_single("TV Data Settings")
     while True:
-        hash_code: str = frappe.generate_hash(length=8).upper()
+        hash_code: str = frappe.generate_hash(length=cfg.field_name_hash_length).upper()
         name = f"DATA_{hash_code}_{key.upper()}"
         if not frappe.db.exists("Datafield", name):
             return name
