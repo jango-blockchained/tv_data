@@ -1,8 +1,33 @@
 frappe.ui.form.on("Datafield", {
   refresh: function (frm) {
     frm.events.render_chart(frm);
+    frm.add_custom_button("Merge Updates", function () {
+      frm.events.merge_updates(frm);
+    });
+  },
+  onload: function (frm) {
+    frm.events.render_chart(frm);
+    frm.add_custom_button("Merge Updates", function () {
+      frm.events.merge_updates(frm);
+    });
   },
 
+  merge_updates: function (frm) {
+    frappe.call({
+      method: "tv_data.tv_data.doctype.datafield.datafield.merge_updates",
+      args: {
+        doc_name: frm.doc.name,
+      },
+      callback: function (r) {
+        if (r.message) {
+          frappe.show_alert({
+            message: r.message,
+            indicator: "green",
+          });
+        }
+      },
+    });
+  },
   render_chart: function (frm) {
     let wrapper = frm.get_field("chart_html").$wrapper;
 

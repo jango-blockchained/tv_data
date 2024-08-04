@@ -30,7 +30,7 @@
   "pr_body",
   "data_tab",
   "cycle_section",
-  "html_ntzq",
+  "cycle_html_horizontal",
   "series_section",
   "timeframe",
   "daily_updates",
@@ -42,7 +42,7 @@
   "next_cycle",
   "runtime_cycle",
   "section_break_voiz",
-  "html_jshh",
+  "cycle_html_list",
   "defaults_tab",
   "section_break_acsm",
   "field_name_hash_length",
@@ -235,6 +235,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "300",
    "fieldname": "cycle_duration",
    "fieldtype": "Duration",
    "is_virtual": 1,
@@ -260,17 +261,8 @@
   {
    "fieldname": "cycle_section",
    "fieldtype": "Section Break",
+   "hide_border": 1,
    "label": "Cycle"
-  },
-  {
-   "fieldname": "html_jshh",
-   "fieldtype": "HTML",
-   "options": "<div id=\"cycle-timeline-container\"></div>"
-  },
-  {
-   "fieldname": "html_ntzq",
-   "fieldtype": "HTML",
-   "options": "<div id=\"horizontal-timeline-container\"></div>"
   },
   {
    "fieldname": "section_break_voiz",
@@ -293,12 +285,22 @@
    "fieldtype": "Int",
    "label": "Field Name Hash Length",
    "non_negative": 1
+  },
+  {
+   "fieldname": "cycle_html_horizontal",
+   "fieldtype": "HTML",
+   "options": "<div id=\"horizontal-timeline-container\"></div>"
+  },
+  {
+   "fieldname": "cycle_html_list",
+   "fieldtype": "HTML",
+   "options": "<div id=\"cycle-timeline-container\"></div>"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-08-03 03:42:48.468542",
+ "modified": "2024-08-04 00:56:02.929424",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "TV Data Settings",

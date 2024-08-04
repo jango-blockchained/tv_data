@@ -135,7 +135,7 @@ doctype_js = {"TV Data Settings": "public/js/tv_data_settings.js"}
 
 scheduler_events = {
     "cron": {
-        "19 * * * *": ["tv_data.tv_data.doctype.datafield.datafield.extend_all_series"]
+        "45 * * * *": ["tv_data.tv_data.doctype.datafield.datafield.extend_all_series"]
     }
 }
 # 		"tv_data.tasks.all"

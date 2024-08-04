@@ -6,7 +6,7 @@
         <div class="tl-wrapper">
             <div class="tl-track">
                 {% for cycle in cycles %}
-                <div class="tl-item {% if loop.index0 < current_cycle_index %}past{% elif loop.index0 == current_cycle_index %}current{% else %}future{% endif %}"
+                <div class="tl-item {% if loop.index0 < current_cycle_index %}past{% elif loop.index0 > current_cycle_index %}current{% else %}future{% endif %}"
                     data-index="{{ loop.index }}" data-time="{{ cycle.time }}">
                     <div class="tl-dot"></div>
                     <div class="tl-content">

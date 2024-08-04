@@ -78,18 +78,23 @@ class TVDataSettings(Document):
 
     @property
     @lru_cache(maxsize=1)
-    def cycle_duration(self) -> timedelta:
-        return timedelta(hours=(24 / self.daily_updates))
+    def cycle_duration(self) -> int:
+        print(f"Calculating cycle duration for daily_updates: {self.daily_updates}")
+        result = timedelta(hours=(24 / self.daily_updates))
+        print(f"Cycle duration: {result}")
+        return result
 
     @property
     @lru_cache(maxsize=1)
     def cycle_begin_time(self) -> datetime.time:
-        return datetime.strptime(self.cycle_begin, "%H:%M:%S").time()
+        return datetime.strptime(self.cycle_begin, "%H:%M:%S.%f").time()
 
     @property
     def next_cycle(self) -> datetime:
         now = datetime.now()
-        cycle_begin_datetime = datetime.combine(now.date(), self.cycle_begin_time)
+        cycle_begin_datetime = datetime.combine(
+            now.date(), self.cycle_begin_time, now.tzinfo
+        )
         while cycle_begin_datetime <= now:
             cycle_begin_datetime += self.cycle_duration
         return cycle_begin_datetime - timedelta(seconds=int(self.scheduler_pre_runtime))
@@ -118,11 +123,10 @@ class TVDataSettings(Document):
         return f"{hours:02}:{minutes:02}:{seconds:02}"
 
     def get_cycles(self):
-        # Use CycleManager to get cycle data
         cycle_manager = CycleManager(
-            cycle_begin_time=self.cycle_begin_time,
+            timeframe=self.timeframe,
             daily_updates=self.daily_updates,
-            cycle_duration=self.cycle_duration,
+            scheduler_pre_runtime=self.scheduler_pre_runtime,
         )
         return cycle_manager.get_cycles()
 
