@@ -39,7 +39,6 @@ class CycleManager:
 
         past_cycles, future_cycles = self._compute_cycles(timeframe_start, current_time)
 
-        # Ensure there is at least one future cycle if all cycles are past
         if not future_cycles and past_cycles:
             future_cycles.append(past_cycles.pop(0))
 
