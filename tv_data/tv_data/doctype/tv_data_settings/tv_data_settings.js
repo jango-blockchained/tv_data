@@ -86,10 +86,10 @@ function addIconButton(frm, label, iconClass, onClick) {
 
   button.hover(
     function () {
-      $(this).find("span").stop(true, true).fadeIn(200);
+      $(this).find("span").fadeIn(200);
     },
     function () {
-      $(this).find("span").stop(true, true).fadeOut(200);
+      $(this).find("span").fadeOut(200);
     }
   );
 }

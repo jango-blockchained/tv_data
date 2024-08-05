@@ -55,7 +55,7 @@ class CycleManager:
 
             cycle_info = {
                 "index": i + 1,
-                "time": cycle_time.strftime("%H:%M:%S.%f"),
+                "time": cycle_time.strftime("%H:%M:%S"),
             }
 
             if cycle_time < current_time:
@@ -83,7 +83,7 @@ class CycleManager:
             if next_cycle_time > now:
                 return {
                     "index": i + 1,
-                    "time": next_cycle_time.time().strftime("%H:%M:%S.%f"),
+                    "time": next_cycle_time.time().strftime("%H:%M:%S"),
                     "datetime": next_cycle_time,
                 }
 
@@ -99,7 +99,7 @@ class CycleManager:
             if prev_cycle_time < now:
                 return {
                     "index": i + 1,
-                    "time": prev_cycle_time.time().strftime("%H:%M:%S.%f"),
+                    "time": prev_cycle_time.time().strftime("%H:%M:%S"),
                     "datetime": prev_cycle_time,
                 }
 

@@ -3,7 +3,6 @@ from frappe.model.document import Document
 from frappe.utils import cint, flt
 from typing import List, Union, Optional, Any
 from datetime import datetime, timedelta
-from functools import lru_cache
 from tv_data.cycle import CycleManager
 
 
@@ -43,7 +42,6 @@ class TVDataSettings(Document):
         return self._defaults
 
     @staticmethod
-    @lru_cache(maxsize=None)
     def timeframe_to_timedelta(timeframe: str) -> timedelta:
         time_units = {"d": 24 * 60 * 60, "h": 60 * 60, "m": 60, "s": 1}
         try:
@@ -77,17 +75,21 @@ class TVDataSettings(Document):
         )
 
     @property
-    @lru_cache(maxsize=1)
     def cycle_duration(self) -> int:
         print(f"Calculating cycle duration for daily_updates: {self.daily_updates}")
-        result = timedelta(hours=(24 / self.daily_updates))
-        print(f"Cycle duration: {result}")
-        return result
+        return timedelta(hours=(24 / self.daily_updates)).total_seconds()
 
     @property
-    @lru_cache(maxsize=1)
+    def cycle_duration_datetime(self) -> timedelta:
+        print(f"Calculating cycle duration for daily_updates: {self.daily_updates}")
+        return timedelta(hours=(24 / self.daily_updates))
+
+    @property
     def cycle_begin_time(self) -> datetime.time:
-        return datetime.strptime(self.cycle_begin, "%H:%M:%S.%f").time()
+        try:
+            return datetime.strptime(self.cycle_begin, "%H:%M:%S.%f").time()
+        except ValueError:
+            return datetime.strptime(self.cycle_begin, "%H:%M:%S").time()
 
     @property
     def next_cycle(self) -> datetime:
@@ -96,7 +98,7 @@ class TVDataSettings(Document):
             now.date(), self.cycle_begin_time, now.tzinfo
         )
         while cycle_begin_datetime <= now:
-            cycle_begin_datetime += self.cycle_duration
+            cycle_begin_datetime += self.cycle_duration_datetime
         return cycle_begin_datetime - timedelta(seconds=int(self.scheduler_pre_runtime))
 
     @property
@@ -106,9 +108,10 @@ class TVDataSettings(Document):
         last_cycle_time = None
         while cycle_begin_datetime <= now:
             last_cycle_time = cycle_begin_datetime
-            cycle_begin_datetime += self.cycle_duration
+            cycle_begin_datetime += self.cycle_duration_datetime
         if last_cycle_time is None:
-            raise ValueError("last_cycle_time is not set")
+            last_cycle_time = cycle_begin_datetime
+            # raise ValueError("last_cycle_time is not set")
         return last_cycle_time - timedelta(seconds=int(self.scheduler_pre_runtime))
 
     def validate(self):

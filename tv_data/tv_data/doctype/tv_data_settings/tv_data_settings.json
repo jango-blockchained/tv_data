@@ -208,6 +208,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "default": "84600",
    "fieldname": "timeframe",
    "fieldtype": "Duration",
    "label": "Timeframe",
@@ -221,11 +222,13 @@
    "label": "Daily Updates"
   },
   {
+   "default": "00:00:00",
    "fieldname": "cycle_begin",
    "fieldtype": "Time",
    "label": "Cycle Begin"
   },
   {
+   "default": "300",
    "fieldname": "scheduler_pre_runtime",
    "fieldtype": "Duration",
    "label": "Scheduler Pre Runtime"
@@ -300,7 +303,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-08-04 00:56:02.929424",
+ "modified": "2024-08-04 23:19:51.595241",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "TV Data Settings",
