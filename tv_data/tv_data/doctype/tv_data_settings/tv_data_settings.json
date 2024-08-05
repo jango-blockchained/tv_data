@@ -43,6 +43,21 @@
   "runtime_cycle",
   "section_break_voiz",
   "cycle_html_list",
+  "time_series_tab",
+  "influxdb_section",
+  "use_influxdb",
+  "influxdb_section_2",
+  "influxdb_admin",
+  "influxdb_admin_password",
+  "column_break_qiym",
+  "influxdb_user",
+  "influxdb_user_password",
+  "section_break_frjq",
+  "influxdb_url",
+  "influxdb_port",
+  "influxdb_token",
+  "influxdb_org",
+  "influxdb_db",
   "defaults_tab",
   "section_break_acsm",
   "field_name_hash_length",
@@ -222,9 +237,9 @@
    "label": "Daily Updates"
   },
   {
-   "default": "00:00:00",
+   "default": "now()",
    "fieldname": "cycle_begin",
-   "fieldtype": "Time",
+   "fieldtype": "Datetime",
    "label": "Cycle Begin"
   },
   {
@@ -298,12 +313,100 @@
    "fieldname": "cycle_html_list",
    "fieldtype": "HTML",
    "options": "<div id=\"cycle-timeline-container\"></div>"
+  },
+  {
+   "fieldname": "time_series_tab",
+   "fieldtype": "Tab Break",
+   "label": "Time Series"
+  },
+  {
+   "fieldname": "influxdb_section",
+   "fieldtype": "Section Break",
+   "hide_border": 1,
+   "label": "InfluxDB"
+  },
+  {
+   "default": "0",
+   "fieldname": "use_influxdb",
+   "fieldtype": "Check",
+   "label": "Use InfluxDB"
+  },
+  {
+   "depends_on": "doc.use_influxdb === 1;",
+   "fieldname": "influxdb_section_2",
+   "fieldtype": "Section Break",
+   "hide_border": 1
+  },
+  {
+   "default": "frappepassword",
+   "depends_on": "doc.use_influxdb === 1;",
+   "fieldname": "influxdb_user_password",
+   "fieldtype": "Password",
+   "label": "InfluxDB User Password",
+   "mandatory_depends_on": "doc.use_influxdb === 1;"
+  },
+  {
+   "default": "adminpassword",
+   "depends_on": "doc.use_influxdb === 1;",
+   "fieldname": "influxdb_admin_password",
+   "fieldtype": "Password",
+   "label": "InfluxDB Admin Password",
+   "mandatory_depends_on": "doc.use_influxdb === 1;"
+  },
+  {
+   "fieldname": "column_break_qiym",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "frappe_user",
+   "depends_on": "doc.use_influxdb === 1;",
+   "fieldname": "influxdb_user",
+   "fieldtype": "Data",
+   "label": "InfluxDB User",
+   "mandatory_depends_on": "doc.use_influxdb === 1;"
+  },
+  {
+   "default": "admin",
+   "fieldname": "influxdb_admin",
+   "fieldtype": "Data",
+   "label": "InfluxDB Admin"
+  },
+  {
+   "fieldname": "section_break_frjq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "8086",
+   "fieldname": "influxdb_port",
+   "fieldtype": "Int",
+   "label": "InfluxDB Port"
+  },
+  {
+   "fieldname": "influxdb_url",
+   "fieldtype": "Data",
+   "label": "InfluxDB URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "influxdb_token",
+   "fieldtype": "Password",
+   "label": "InfluxDB Token"
+  },
+  {
+   "fieldname": "influxdb_org",
+   "fieldtype": "Data",
+   "label": "InfluxDB Org"
+  },
+  {
+   "fieldname": "influxdb_db",
+   "fieldtype": "Data",
+   "label": "InfluxDB DB"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-08-04 23:19:51.595241",
+ "modified": "2024-08-05 12:33:09.140557",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "TV Data Settings",

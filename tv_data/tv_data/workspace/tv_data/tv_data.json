@@ -5,14 +5,9 @@
    "label": "Merged Updates Heatmap"
   }
  ],
- "content": "[{\"id\":\"EFWvLMyqUI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">TradingView EOD Datafield Aggregator</span>\",\"col\":12}},{\"id\":\"E1IyFgshww\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Datafields\",\"col\":3}},{\"id\":\"AW0mXLu1yM\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Unmerged Updates\",\"col\":3}},{\"id\":\"FNFTaGHO7Q\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Merged Updates\",\"col\":3}},{\"id\":\"My3i_euePd\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Series Units\",\"col\":3}},{\"id\":\"3nYD6h9eTC\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Merged Updates Heatmap\",\"col\":6}},{\"id\":\"IlIRRvlWIu\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"InfluxDB Service\",\"col\":6}},{\"id\":\"vkKuoWVaF-\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Kd4r9gJ4FO\",\"type\":\"card\",\"data\":{\"card_name\":\"Links\",\"col\":6}},{\"id\":\"lFTn1-MkGQ\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Datafield\",\"col\":6}},{\"id\":\"5IPmqRhlKx\",\"type\":\"spacer\",\"data\":{\"col\":12}}]",
+ "content": "[{\"id\":\"EFWvLMyqUI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">TradingView EOD Datafield Aggregator</span>\",\"col\":12}},{\"id\":\"E1IyFgshww\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Datafields\",\"col\":3}},{\"id\":\"AW0mXLu1yM\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Unmerged Updates\",\"col\":3}},{\"id\":\"FNFTaGHO7Q\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Merged Updates\",\"col\":3}},{\"id\":\"My3i_euePd\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Series Units\",\"col\":3}},{\"id\":\"3nYD6h9eTC\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Merged Updates Heatmap\",\"col\":6}},{\"id\":\"lFTn1-MkGQ\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Datafield\",\"col\":6}},{\"id\":\"vkKuoWVaF-\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Kd4r9gJ4FO\",\"type\":\"card\",\"data\":{\"card_name\":\"Links\",\"col\":6}},{\"id\":\"5IPmqRhlKx\",\"type\":\"spacer\",\"data\":{\"col\":12}}]",
  "creation": "2024-07-12 00:14:58.964435",
- "custom_blocks": [
-  {
-   "custom_block_name": "InfluxDB Service",
-   "label": "InfluxDB Service"
-  }
- ],
+ "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
@@ -63,7 +58,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-08-04 23:07:57.283302",
+ "modified": "2024-08-05 18:52:20.648826",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "TV Data",

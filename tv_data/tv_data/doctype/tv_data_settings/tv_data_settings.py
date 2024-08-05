@@ -32,6 +32,7 @@ class TVDataSettings(Document):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._defaults: Optional[TVDataSettingsDefaults] = None
+        self._cycle_manager: Optional[CycleManager] = None
 
     @property
     def defaults(self):
@@ -41,14 +42,15 @@ class TVDataSettings(Document):
             )
         return self._defaults
 
-    @staticmethod
-    def timeframe_to_timedelta(timeframe: str) -> timedelta:
-        time_units = {"d": 24 * 60 * 60, "h": 60 * 60, "m": 60, "s": 1}
-        try:
-            num, unit = int(timeframe[:-1]), timeframe[-1]
-            return timedelta(seconds=time_units[unit] * num)
-        except (KeyError, ValueError):
-            raise ValueError(f"Invalid timeframe: {timeframe}")
+    @property
+    def cycle_manager(self):
+        if self._cycle_manager is None:
+            self._cycle_manager = CycleManager(
+                timeframe=self.timeframe,
+                daily_updates=self.daily_updates,
+                scheduler_pre_runtime=self.scheduler_pre_runtime,
+            )
+        return self._cycle_manager
 
     @property
     def fork_name(self):
@@ -76,43 +78,21 @@ class TVDataSettings(Document):
 
     @property
     def cycle_duration(self) -> int:
-        print(f"Calculating cycle duration for daily_updates: {self.daily_updates}")
-        return timedelta(hours=(24 / self.daily_updates)).total_seconds()
+        return int(self.cycle_manager.cycle_duration.total_seconds())
 
     @property
     def cycle_duration_datetime(self) -> timedelta:
-        print(f"Calculating cycle duration for daily_updates: {self.daily_updates}")
-        return timedelta(hours=(24 / self.daily_updates))
-
-    @property
-    def cycle_begin_time(self) -> datetime.time:
-        try:
-            return datetime.strptime(self.cycle_begin, "%H:%M:%S.%f").time()
-        except ValueError:
-            return datetime.strptime(self.cycle_begin, "%H:%M:%S").time()
+        return self.cycle_manager.cycle_duration
 
     @property
     def next_cycle(self) -> datetime:
-        now = datetime.now()
-        cycle_begin_datetime = datetime.combine(
-            now.date(), self.cycle_begin_time, now.tzinfo
-        )
-        while cycle_begin_datetime <= now:
-            cycle_begin_datetime += self.cycle_duration_datetime
-        return cycle_begin_datetime - timedelta(seconds=int(self.scheduler_pre_runtime))
+        next_cycle = self.cycle_manager.get_next_cycle()
+        return next_cycle["datetime"] if next_cycle else None
 
     @property
     def last_cycle(self) -> datetime:
-        now = datetime.now()
-        cycle_begin_datetime = datetime.combine(now.date(), self.cycle_begin_time)
-        last_cycle_time = None
-        while cycle_begin_datetime <= now:
-            last_cycle_time = cycle_begin_datetime
-            cycle_begin_datetime += self.cycle_duration_datetime
-        if last_cycle_time is None:
-            last_cycle_time = cycle_begin_datetime
-            # raise ValueError("last_cycle_time is not set")
-        return last_cycle_time - timedelta(seconds=int(self.scheduler_pre_runtime))
+        prev_cycle = self.cycle_manager.get_previous_cycle()
+        return prev_cycle["datetime"] if prev_cycle else None
 
     def validate(self):
         for attr in ["fork_data_type_name", "repo_owner", "repo_name", "fork_owner"]:
@@ -149,11 +129,9 @@ class TVDataSettings(Document):
     @frappe.whitelist()
     def get_horizontal_timeline_html(self):
         cycles = self.get_cycles()
-        current_time_display = datetime.now().time().strftime("%H:%M:%S")
         context = {
             "cycles": cycles["past"] + cycles["future"],
             "current_cycle_index": len(cycles["past"]),
-            "current_time_display": current_time_display,
         }
 
         return frappe.render_template(
