@@ -9,12 +9,15 @@
   "datafield",
   "column_break_jukh",
   "datafield_update",
-  "section_break_sxqt",
-  "date_string",
-  "time_received",
-  "column_break_nvow",
+  "column_break_kpjv",
   "value",
-  "n"
+  "n",
+  "section_break_vaii",
+  "date_string",
+  "column_break_rkmc",
+  "time_received",
+  "column_break_wske",
+  "time_merged"
  ],
  "fields": [
   {
@@ -37,6 +40,7 @@
    "default": "0",
    "fieldname": "n",
    "fieldtype": "Int",
+   "hidden": 1,
    "label": "N",
    "length": 1,
    "non_negative": 1,
@@ -55,28 +59,41 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "section_break_sxqt",
-   "fieldtype": "Section Break"
-  },
-  {
    "fieldname": "datafield_update",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Datafield Update"
   },
   {
-   "fieldname": "column_break_nvow",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "time_received",
    "fieldtype": "Datetime",
    "in_list_view": 1,
    "label": "Time Received"
+  },
+  {
+   "fieldname": "column_break_kpjv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_vaii",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_rkmc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_wske",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "time_merged",
+   "fieldtype": "Datetime",
+   "label": "Time Merged"
   }
  ],
  "links": [],
- "modified": "2024-07-31 17:30:42.372710",
+ "modified": "2024-08-07 19:27:51.709834",
  "modified_by": "Administrator",
  "module": "TV Data",
  "name": "Datafield Merged Update",
