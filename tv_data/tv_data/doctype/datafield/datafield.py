@@ -142,7 +142,6 @@ class Datafield(Document):
     #         frappe.log_error(f"Error in extend_doc_series: {str(e)}", "Datafield Error")
     #         raise
 
-    @frappe.whitelist()
     def insert_update(self, value: float, n: Optional[int]) -> None:
         try:
             new_entry = {
@@ -155,10 +154,6 @@ class Datafield(Document):
                 "parentfield": "datafield_update_table",
             }
             self.append("datafield_update_table", new_entry)
-            frappe.publish_realtime(
-                "new_datafield_update",
-                message={"parent": self.name, "value": value},
-            )
 
         except Exception as e:
             frappe.log_error(
